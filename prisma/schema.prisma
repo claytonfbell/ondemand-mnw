@@ -79,4 +79,9 @@ model UserAcivityLog {
   details   String
 }
 
+model MiscSettings {
+  id                                Int         @id @default(autoincrement())
+  exportFromPopuliLastModifiedTime  DateTime
+}
+
 // npx prisma migrate dev --name init

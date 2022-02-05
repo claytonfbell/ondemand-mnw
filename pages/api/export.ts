@@ -1,8 +1,8 @@
 import { NextApiResponse } from "next"
 import { buildResponse } from "../../lib/server/buildResponse"
 import { UnauthorizedException } from "../../lib/server/HttpException"
+import { exportFromPopuliToMailChimp } from "../../lib/server/populi-mailchimp/exportFromPopuliToMailChimp"
 import withSession, { NextIronRequest } from "../../lib/server/session"
-import { sendNewPurchasersLoginLinks } from "../../lib/server/squarespace/sendNewPurchasersLoginLinks"
 
 async function handler(
   req: NextIronRequest,
@@ -13,7 +13,8 @@ async function handler(
       if (req.query.ck !== process.env.CRON_KEY) {
         throw new UnauthorizedException()
       }
-      return await sendNewPurchasersLoginLinks()
+      await exportFromPopuliToMailChimp()
+      return true
     }
   })
 }

@@ -40,7 +40,8 @@ sudo certbot --nginx -d ondemand.montessori-nw.org
 
 crontab -e
 # ADD: 0 5 * * * /usr/bin/certbot renew --quiet
-# ADD: * * * * * curl --silent https://ondemand.montessori-nw.org/api/scrape
+# ADD: * * * * * curl --silent https://ondemand.montessori-nw.org/api/scrape?ck={CRON_KEY}
+# ADD: 0 * * * * curl --silent https://ondemand.montessori-nw.org/api/export?ck={CRON_KEY}
 
 touch /etc/rc.local
 chmod +x /etc/rc.local
