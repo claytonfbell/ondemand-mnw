@@ -66,7 +66,9 @@ async function handler(
         const orders = await prisma.squarespaceOrder.findMany({
           where: { customerEmail: email },
         })
-        user = await prisma.user.create({ data: { email, isAdmin: false } })
+        if (orders.length > 0) {
+          user = await prisma.user.create({ data: { email, isAdmin: false } })
+        }
       }
 
       // still not found, throw error

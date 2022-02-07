@@ -80,8 +80,9 @@ model UserAcivityLog {
 }
 
 model MiscSettings {
-  id                                Int         @id @default(autoincrement())
-  exportFromPopuliLastModifiedTime  DateTime
+  id                                        Int         @id @default(autoincrement())
+  exportFromPopuliLastModifiedTime          DateTime
+  scrapeFromSquarespaceLastModifiedTime     DateTime?
 }
 
 // npx prisma migrate dev --name init

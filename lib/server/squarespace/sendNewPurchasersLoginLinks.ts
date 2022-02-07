@@ -29,9 +29,13 @@ export async function sendNewPurchasersLoginLinks() {
     const order = newOrders[i]
     const webinarsToEmail: Webinar[] = []
 
-    const webinars = await prisma.webinar.findMany({
-      where: { sku: { in: order.items.map((x) => x.sku) } },
-    })
+    const webinars = (
+      await prisma.webinar.findMany({
+        where: { sku: { in: order.items.map((x) => x.sku) } },
+      })
+    )
+      // make sure we aren't matching blank skus in orders and webinars!
+      .filter((w) => w.sku.length > 0)
 
     if (webinars.length > 0) {
       // find user

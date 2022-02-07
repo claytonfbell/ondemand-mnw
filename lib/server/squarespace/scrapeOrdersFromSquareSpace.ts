@@ -1,5 +1,6 @@
 import axios, { AxiosRequestHeaders } from "axios"
 import moment from "moment"
+import { getMiscSettings } from "../getMiscSettings"
 import prisma from "../prisma"
 import {
   ISquarespaceFetchOrdersResponse,
@@ -17,12 +18,24 @@ export async function scrapeOrdersFromSquareSpace(): Promise<number> {
     .set("second", 0)
     .set("millisecond", 0)
 
+  // time to use for the next time we run this
+  const aFewMinutesAgo = moment().subtract(5, "minutes").toDate()
+
   // we only need to scrape orders that were modified after our last sync
-  const mostRecentModification = await prisma.squarespaceOrder.findFirst({
-    orderBy: { modifiedOn: "desc" },
-  })
-  if (mostRecentModification !== null) {
-    modifiedAfter = moment(mostRecentModification.modifiedOn)
+  //   const mostRecentModification = await prisma.squarespaceOrder.findFirst({
+  //     orderBy: { modifiedOn: "desc" },
+  //   })
+  //   if (mostRecentModification !== null) {
+  //     modifiedAfter = moment(mostRecentModification.modifiedOn)
+  //   }
+
+  // we only need to scrape orders that were modified after last time we checked
+  const miscSettings = await getMiscSettings()
+  if (
+    miscSettings !== null &&
+    miscSettings.scrapeFromSquarespaceLastModifiedTime !== null
+  ) {
+    modifiedAfter = moment(miscSettings.scrapeFromSquarespaceLastModifiedTime)
   }
 
   const apiVersion = "1.0"
@@ -33,14 +46,13 @@ export async function scrapeOrdersFromSquareSpace(): Promise<number> {
     "Content-Type": "application/json",
   }
 
-  let response = await axios.get<ISquarespaceFetchOrdersResponse>(
-    `https://api.squarespace.com/${apiVersion}/commerce/orders?modifiedAfter=${encodeURIComponent(
-      modifiedAfter.toISOString()
-    )}&modifiedBefore=${encodeURIComponent(modifiedBefore)}`,
-    {
-      headers,
-    }
-  )
+  const url = `https://api.squarespace.com/${apiVersion}/commerce/orders?modifiedAfter=${encodeURIComponent(
+    modifiedAfter.toISOString()
+  )}&modifiedBefore=${encodeURIComponent(modifiedBefore)}`
+  console.log(url)
+  let response = await axios.get<ISquarespaceFetchOrdersResponse>(url, {
+    headers,
+  })
 
   let count = 0
   await response.data.result.forEach(async (order) => {
@@ -65,6 +77,14 @@ export async function scrapeOrdersFromSquareSpace(): Promise<number> {
       await insertOrUpdateOrder(order)
     })
   }
+
+  // for next time
+  await prisma.miscSettings.update({
+    where: { id: 1 },
+    data: {
+      scrapeFromSquarespaceLastModifiedTime: aFewMinutesAgo,
+    },
+  })
 
   return count
 }
@@ -106,7 +126,7 @@ async function insertOrUpdateOrder(order: ISquarespaceOrder) {
   // insert the sku items
   await order.lineItems.forEach(async (lineItem) => {
     await prisma.squarespaceOrderLineItem.create({
-      data: { id: lineItem.id, orderId: order.id, sku: lineItem.sku },
+      data: { id: lineItem.id, orderId: order.id, sku: lineItem.sku || "" },
     })
   })
 }

@@ -21,5 +21,5 @@ export interface ISquarespaceOrder {
 
 export interface ISquarespaceOrderLineItem {
   id: string
-  sku: string
+  sku: string | null
 }
