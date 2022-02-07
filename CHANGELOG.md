@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.1.0...v1.1.1) (2022-02-07)
+
+
+### Bug Fixes
+
+* Improvements to square space scraping ([04794f3](https://github.com/claytonfbell/ondemand-mnw/commit/04794f3edfa7fe31700dbffda2ad2bb7db38dd0b))
+
 ## [1.1.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.0.0...v1.1.0) (2022-02-05)
 
 
