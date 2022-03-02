@@ -12,7 +12,7 @@ async function handler(
     await requireAdminAuthentication(req, prisma)
 
     if (req.method === "GET") {
-      // FETCH ORDERS
+      // FETCH ACTIVITY FEED
       return await prisma.userAcivityLog.findMany({
         include: { user: true },
         orderBy: { time: "desc" },

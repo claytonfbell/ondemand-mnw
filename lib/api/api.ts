@@ -1,4 +1,4 @@
-import { MuxAsset, Webinar } from "@prisma/client"
+import { MuxAsset, Webinar, WebinarsOnUsers } from "@prisma/client"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { AuthcodeRequestResponse } from "./AuthcodeRequestResponse"
 import { AuthenticationRequest } from "./AuthenticationRequest"
@@ -10,6 +10,7 @@ import rest, { RestError } from "./rest"
 import { UploadRequest } from "./UploadRequest"
 import { UploadResponse } from "./UploadResponse"
 import { UserActivityLogWithUser } from "./UserActivityLogWithUser"
+import { UserWithWebinars } from "./UserWithWebinars"
 import { WebinarWithMuxAssets } from "./WebinarWithMuxAssets"
 
 rest.setBaseURL(`/api`)
@@ -168,5 +169,59 @@ export function useFetchUserActivities() {
   return useQuery<UserActivityLogWithUser[], RestError>(
     ["userActivities"],
     () => rest.get(`/userActivities`)
+  )
+}
+
+/////////////////
+
+export function useFetchUsers() {
+  return useQuery<UserWithWebinars[], RestError>(["users"], () =>
+    rest.get(`/users`)
+  )
+}
+
+export function useCreateUser() {
+  const queryClient = useQueryClient()
+  return useMutation<void, RestError, { email: string }>(
+    (params) => rest.post(`/users`, params),
+    {
+      onSuccess: () => {
+        queryClient.refetchQueries("users")
+      },
+    }
+  )
+}
+
+export function useFetchUser(userId: number | undefined) {
+  return useQuery<UserWithWebinars, RestError>(
+    ["users", userId],
+    () => rest.get(`/users/${userId}`),
+    { enabled: userId !== undefined }
+  )
+}
+
+export function useUpsertWebinarOnUser() {
+  const queryClient = useQueryClient()
+  return useMutation<void, RestError, WebinarsOnUsers>(
+    (params) =>
+      rest.put(`/users/${params.userId}/webinars/${params.webinarId}`, params),
+    {
+      onSuccess: () => {
+        queryClient.refetchQueries("users")
+      },
+    }
+  )
+}
+
+export function useDeleteWebinarOnUser() {
+  const queryClient = useQueryClient()
+  return useMutation<void, RestError, WebinarsOnUsers>(
+    ({ userId, webinarId }) =>
+      rest.delete(`/users/${userId}/webinars/${webinarId}`),
+    {
+      onSuccess: () => {
+        queryClient.refetchQueries("users")
+      },
+    }
   )
 }
