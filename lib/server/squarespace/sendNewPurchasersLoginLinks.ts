@@ -1,4 +1,3 @@
-import { Webinar } from "@prisma/client"
 import axios from "axios"
 import moment from "moment"
 import { v4 as uuidv4 } from "uuid"
@@ -6,6 +5,7 @@ import { IStatusMonitorPing } from "../../api/IStatusMonitorPing"
 import prisma from "../prisma"
 import { sendEmail } from "../sendEmail"
 import { userLog } from "../userLog"
+import { applyWebinarsToUsers } from "./applyWebinarsToUsers"
 import { scrapeOrdersFromSquareSpace } from "./scrapeOrdersFromSquareSpace"
 
 export async function sendNewPurchasersLoginLinks() {
@@ -13,6 +13,9 @@ export async function sendNewPurchasersLoginLinks() {
 
   const scraped = await scrapeOrdersFromSquareSpace()
   logs.push(`Scraped ${scraped} order(s) from Squarespace`)
+
+  const applied = await applyWebinarsToUsers()
+  logs.push(`Applied ${applied} webinars(s) to users`)
 
   // get new orders in past hour that havn't received email yet and are not canceled
   const ago = moment().subtract(24, "hours")
@@ -22,50 +25,42 @@ export async function sendNewPurchasersLoginLinks() {
       modifiedOn: { gt: ago.toDate() },
       fulfillmentStatus: { not: "CANCELED" },
     },
-    include: { items: true },
   })
 
   for (let i = 0; i < newOrders.length; i++) {
     const order = newOrders[i]
-    const webinarsToEmail: Webinar[] = []
 
-    const webinars = (
-      await prisma.webinar.findMany({
-        where: { sku: { in: order.items.map((x) => x.sku) } },
-      })
-    )
-      // make sure we aren't matching blank skus in orders and webinars!
-      .filter((w) => w.sku.length > 0)
+    const users = await prisma.user.findMany({
+      where: {
+        webinars: { some: { orderId: order.id } },
+      },
+    })
+    for (let j = 0; j < users.length; j++) {
+      let user = users[j]
 
-    if (webinars.length > 0) {
-      // find user
-      let user = await prisma.user.findUnique({
-        where: { email: order.customerEmail },
+      const webinars = await prisma.webinar.findMany({
+        where: { users: { some: { userId: user.id, orderId: order.id } } },
       })
-      // create new user if they don't exist yet
-      if (user === null) {
-        user = await prisma.user.create({
-          data: { email: order.customerEmail, isAdmin: false },
+
+      if (webinars.length > 0) {
+        // create new auth code
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: {
+            authCode: uuidv4(),
+            authCodeExpiresAt: moment().add(1, "days").toDate(),
+          },
         })
-      }
 
-      // create new auth code
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          authCode: uuidv4(),
-          authCodeExpiresAt: moment().add(1, "days").toDate(),
-        },
-      })
+        const authLink = `${process.env.HOST}/?authCode=${user.authCode}`
 
-      const authLink = `${process.env.HOST}/?authCode=${user.authCode}`
+        const subject = `Montessori Northwest Order #${order.orderNumber}`
+        console.log(subject)
+        const surveyUrls = webinars
+          .filter((x) => x.surveyUrl !== null && x.surveyUrl !== "")
+          .map((x) => x.surveyUrl)
 
-      const subject = `Montessori Northwest Order #${order.orderNumber}`
-      const surveyUrls = webinars
-        .filter((x) => x.surveyUrl !== null && x.surveyUrl !== "")
-        .map((x) => x.surveyUrl)
-
-      const text = `Thank you for purchasing:
+        const text = `Thank you for purchasing:
 
 ${webinars
   .map(
@@ -90,17 +85,22 @@ If you have time after you have viewed the video and completed the quiz we would
 }
 
 `
-      await prisma.squarespaceOrder.update({
-        where: { id: order.id },
-        data: {
-          sentLoginEmail: true,
-        },
-      })
-      await sendEmail({ to: order.customerEmail, subject, text })
-      logs.push(
-        `${user.email} received order confirmation link to watch videos`
-      )
-      userLog(user, "Received order confirmation link to watch videos")
+        // protect for dev purposes
+        const permitted = ["claytonfbell@gmail.com"]
+        if (permitted.includes(user.email)) {
+          await prisma.squarespaceOrder.update({
+            where: { id: order.id },
+            data: {
+              sentLoginEmail: true,
+            },
+          })
+          await sendEmail({ to: user.email, subject, text })
+          logs.push(
+            `${user.email} received order confirmation link to watch videos`
+          )
+          userLog(user, "Received order confirmation link to watch videos")
+        }
+      }
     }
   }
 

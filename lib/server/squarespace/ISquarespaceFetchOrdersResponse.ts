@@ -22,4 +22,11 @@ export interface ISquarespaceOrder {
 export interface ISquarespaceOrderLineItem {
   id: string
   sku: string | null
+  quantity?: number | null
+  customizations?: ICustomization[] | null
+}
+
+interface ICustomization {
+  label: string
+  value: string
 }

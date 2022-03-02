@@ -17,6 +17,7 @@ model User {
   authCodeExpiresAt     DateTime?
   isAdmin               Boolean                 @default(false)
   activityLogs          UserAcivityLog[]
+  webinars              WebinarsOnUsers[]
 }
 
 model Webinar {
@@ -26,6 +27,18 @@ model Webinar {
   description           String                  @db.VarChar(4000)
   surveyUrl             String                  @db.VarChar(1000)
   muxAssets             MuxAssetsOnWebinars[]
+  users                 WebinarsOnUsers[]
+}
+
+model WebinarsOnUsers {
+  webinar               Webinar                 @relation(fields: [webinarId], references: [id])
+  webinarId             Int
+  user                  User                    @relation(fields: [userId], references: [id])
+  userId                Int
+  expiresAt             DateTime       
+  order                 SquarespaceOrder?       @relation(fields: [orderId], references: [id])
+  orderId               String?                 @db.VarChar(255)
+  @@id([webinarId, userId])
 }
 
 model MuxAsset {
@@ -54,6 +67,7 @@ model SquarespaceOrder {
   fulfillmentStatus     FulfillmentStatus
   sentLoginEmail        Boolean                 @default(false)
   items                 SquarespaceOrderLineItem[]
+  webinarOnUsers        WebinarsOnUsers[]
   @@index([customerEmail])
 }
 
@@ -62,6 +76,9 @@ model SquarespaceOrderLineItem {
   order                 SquarespaceOrder        @relation(fields: [orderId], references: [id])
   orderId               String                  @db.VarChar(255)
   sku                   String                  @db.VarChar(255)
+  applied               Boolean                 @default(false)
+  quantity              Int                     @default(0)
+  emails                String[]
   @@index([sku])
 }
 
@@ -82,7 +99,7 @@ model UserAcivityLog {
 model MiscSettings {
   id                                        Int         @id @default(autoincrement())
   exportFromPopuliLastModifiedTime          DateTime
-  scrapeFromSquarespaceLastModifiedTime     DateTime?
+  scrapeFromSquarespaceLastModifiedTimeB    DateTime?
 }
 
 // npx prisma migrate dev --name init

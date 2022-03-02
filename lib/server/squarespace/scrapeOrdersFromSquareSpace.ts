@@ -1,5 +1,6 @@
 import axios, { AxiosRequestHeaders } from "axios"
 import moment from "moment"
+import vr from "validator"
 import { getMiscSettings } from "../getMiscSettings"
 import prisma from "../prisma"
 import {
@@ -33,9 +34,9 @@ export async function scrapeOrdersFromSquareSpace(): Promise<number> {
   const miscSettings = await getMiscSettings()
   if (
     miscSettings !== null &&
-    miscSettings.scrapeFromSquarespaceLastModifiedTime !== null
+    miscSettings.scrapeFromSquarespaceLastModifiedTimeB !== null
   ) {
-    modifiedAfter = moment(miscSettings.scrapeFromSquarespaceLastModifiedTime)
+    modifiedAfter = moment(miscSettings.scrapeFromSquarespaceLastModifiedTimeB)
   }
 
   const apiVersion = "1.0"
@@ -82,7 +83,7 @@ export async function scrapeOrdersFromSquareSpace(): Promise<number> {
   await prisma.miscSettings.update({
     where: { id: 1 },
     data: {
-      scrapeFromSquarespaceLastModifiedTime: aFewMinutesAgo,
+      scrapeFromSquarespaceLastModifiedTimeB: aFewMinutesAgo,
     },
   })
 
@@ -126,7 +127,15 @@ async function insertOrUpdateOrder(order: ISquarespaceOrder) {
   // insert the sku items
   await order.lineItems.forEach(async (lineItem) => {
     await prisma.squarespaceOrderLineItem.create({
-      data: { id: lineItem.id, orderId: order.id, sku: lineItem.sku || "" },
+      data: {
+        id: lineItem.id,
+        orderId: order.id,
+        sku: lineItem.sku || "",
+        quantity: lineItem.quantity || 1,
+        emails: (lineItem.customizations || [])
+          .map((x) => x.value.toLowerCase().trim())
+          .filter((v) => vr.isEmail(v)),
+      },
     })
   })
 }
