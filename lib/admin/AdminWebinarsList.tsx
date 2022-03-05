@@ -12,6 +12,8 @@ import {
   WEBINAR_FORM_DEFAULT_STATE,
 } from "./WebinarFormDialog"
 
+type SortBy = "title" | "sku"
+
 export function AdminWebinarsList() {
   const [openWebinar, setOpenWebinar] = useState<WebinarWithMuxAssets>()
   const { data: webinars = [] } = useFetchAllWebinars()
@@ -24,23 +26,50 @@ export function AdminWebinarsList() {
     }
   }
 
+  const [sortBy, setSortBy] = useState<SortBy>("title")
+  const [ascendingTitle, setAscendingTitle] = useState(true)
+  const [ascendingSku, setAscendingSku] = useState(true)
+
   return (
     <>
       <Title label="Webinars" />
       <Spacer />
+      {sortBy} {ascendingSku ? "true" : "false"}
       <ResponsiveTable
         onEdit={(webinar) => setOpenWebinar(webinar)}
         onDelete={(webinar) => setWebinarToDelete(webinar)}
         striped
-        rowData={webinars}
+        rowData={webinars.sort((a, b) => {
+          if (sortBy === "title" && ascendingTitle) {
+            return a.title.localeCompare(b.title)
+          } else if (sortBy === "title" && !ascendingTitle) {
+            return b.title.localeCompare(a.title)
+          } else if (sortBy === "sku" && ascendingSku) {
+            return a.sku.localeCompare(b.sku)
+          } else if (sortBy === "sku" && !ascendingSku) {
+            return b.sku.localeCompare(a.sku)
+          } else {
+            return 0
+          }
+        })}
         schema={[
           {
             label: "Title",
+            ascending: ascendingTitle,
+            onSortChange: (x) => {
+              setSortBy("title")
+              setAscendingTitle(!ascendingTitle)
+            },
             render: (w) => w.title,
           },
           {
             xsDownHidden: true,
             label: "SKU",
+            ascending: ascendingSku,
+            onSortChange: (x) => {
+              setSortBy("sku")
+              setAscendingSku(!ascendingSku)
+            },
             render: (w) => w.sku,
           },
           {

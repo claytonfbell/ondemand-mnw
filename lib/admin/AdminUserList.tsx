@@ -28,7 +28,9 @@ export function AdminUsersList() {
       <Spacer />
       <ResponsiveTable
         striped
-        rowData={users}
+        rowData={users.sort((a, b) => {
+          return a.email.localeCompare(b.email)
+        })}
         onEdit={(x) => setOpenUser(x)}
         schema={[
           {
