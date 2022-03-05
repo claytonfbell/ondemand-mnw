@@ -38,7 +38,7 @@ export function WebinarBox(props: Props) {
                   href={props.webinar.surveyUrl}
                   target="google"
                 >
-                  Complete the Survey
+                  Complete the Quiz
                 </Button>
               </>
             ) : null}
