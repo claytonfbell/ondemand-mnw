@@ -66,23 +66,14 @@ ${webinars
   .map(
     (w) =>
       `* ${w.title} - [Watch Now](${authLink})${
-        w.surveyUrl !== "" ? ` - [Complete Survey After](${w.surveyUrl})` : ""
+        w.surveyUrl !== "" ? ` - [Complete Quiz After](${w.surveyUrl})` : ""
       }`
   )
   .join("\n")}
 
-This email includes a secure link to the recording, which will last 7 days after the purchase.
+  This email includes a secure link to the webinar, which will last 7 days after the purchase.
 
-${
-  surveyUrls.length > 0
-    ? `In order to receive a professional development certificate for watching this recorded webinar, please complete the Google Form linked after the video.
-
-After you have watched the webinar and completed the Google Form, email info@montessori-nw.org to let us know you are ready to receive your professional development certificate. Upon receipt of an email from you, we will verify that you purchased the recording and completed the Google Form then we will award your certificate.
-
-If you have time after you have viewed the video and completed the quiz we would love to hear your feedback. By completing the Google Feedback Form we are able to offer Community Education events that suit your needs.
-`
-    : ""
-}
+  In order to receive a professional development certificate for watching this recorded webinar, please complete the quiz linked on the webinar page. After completing the quiz, email [info@montessori-nw.org](mailto:info@montessori-nw.org) to let us know you are ready to receive your certificate. Upon verification of your purchase and completed quiz, we will award your certificate via email.
 
 `
         // protect for dev purposes
