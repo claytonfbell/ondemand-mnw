@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.2.0...v1.3.0) (2022-03-07)
+
+
+### Features
+
+* added ability to sort table columns ([0e7bf95](https://github.com/claytonfbell/ondemand-mnw/commit/0e7bf95bd3920af896481df733017d2183278138))
+* changes to the confirmation email ([d7966c5](https://github.com/claytonfbell/ondemand-mnw/commit/d7966c54338fcc5eb5945db90e03d1511c8cbd99))
+* Modified the quiz button label ([766032b](https://github.com/claytonfbell/ondemand-mnw/commit/766032bb4785af43b434d4b21925fa594e0789a7))
+* restructured to find multiple users in each scraped order ([0d82e81](https://github.com/claytonfbell/ondemand-mnw/commit/0d82e81276738496e904f72b8d327fe41fa3ff38))
+* user management tools ([cef51e1](https://github.com/claytonfbell/ondemand-mnw/commit/cef51e15bef5ef6a4cebf0d3a7b5e26a506389ca))
+
+
+### Bug Fixes
+
+* adjusted protection from sending email in non-production environments ([b03bdc6](https://github.com/claytonfbell/ondemand-mnw/commit/b03bdc6ba9d1b872ee03e9a505b8b41a66163a55))
+
 ## [1.2.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.1.1...v1.2.0) (2022-02-10)
 
 
