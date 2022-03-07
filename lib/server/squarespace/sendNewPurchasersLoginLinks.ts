@@ -76,21 +76,17 @@ ${webinars
   In order to receive a professional development certificate for watching this recorded webinar, please complete the quiz linked on the webinar page. After completing the quiz, email [info@montessori-nw.org](mailto:info@montessori-nw.org) to let us know you are ready to receive your certificate. Upon verification of your purchase and completed quiz, we will award your certificate via email.
 
 `
-        // protect for dev purposes
-        const permitted = ["claytonfbell@gmail.com"]
-        if (permitted.includes(user.email)) {
-          await prisma.squarespaceOrder.update({
-            where: { id: order.id },
-            data: {
-              sentLoginEmail: true,
-            },
-          })
-          await sendEmail({ to: user.email, subject, text })
-          logs.push(
-            `${user.email} received order confirmation link to watch videos`
-          )
-          userLog(user, "Received order confirmation link to watch videos")
-        }
+        await prisma.squarespaceOrder.update({
+          where: { id: order.id },
+          data: {
+            sentLoginEmail: true,
+          },
+        })
+        await sendEmail({ to: user.email, subject, text })
+        logs.push(
+          `${user.email} received order confirmation link to watch videos`
+        )
+        userLog(user, "Received order confirmation link to watch videos")
       }
     }
   }

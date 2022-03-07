@@ -2,13 +2,27 @@ import sgMail from "@sendgrid/mail"
 import marked from "marked"
 import { PRIMARY_COLOR } from "../theme"
 
+// email that can receive messages in non-production environments
+const PERMITTED = ["claytonfbell@gmail.com", "claytonfbell@hotmail.com"]
+
 export interface SendEmailArgs {
   to: string
   subject: string
   text: string
 }
 
-export function sendEmail({ to, subject, text }: SendEmailArgs) {
+export function isProductionEnvironment() {
+  return process.env.HOST === "https://ondemand.montessori-nw.org"
+}
+
+export async function sendEmail({ to, subject, text }: SendEmailArgs) {
+  if (!isProductionEnvironment()) {
+    if (!PERMITTED.includes(to)) {
+      console.log(`Email not permitted to send in this environment for ${to}`)
+      return false
+    }
+  }
+
   // send email
   sgMail.setApiKey(process.env.SENDGRID_API_KEY || "")
 
