@@ -29,6 +29,7 @@ yarn start
 yarn global add pm2
 pm2 start yarn --name "nextjs" --interpreter bash -- start
 pm2 show nextjs
+pm2 stop nextjs
 
 apt install nginx-full
 apt install certbot python3-certbot-nginx
