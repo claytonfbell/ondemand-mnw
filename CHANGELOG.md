@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.3.0...v1.4.0) (2022-03-17)
+
+
+### Features
+
+* upgrade node v16, switch from yarn to npm, dockerize app ([575cd2c](https://github.com/claytonfbell/ondemand-mnw/commit/575cd2c8ee3fc56c2c54051a30db6907185b576c))
+
 ## [1.3.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.2.0...v1.3.0) (2022-03-07)
 
 
