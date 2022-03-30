@@ -82,7 +82,7 @@ async function processPopuliPerson(personId: number, person: Person) {
     // tag from zip
     if (
       prt.zips !== undefined &&
-      prt.zips.filter((value) => zips.indexOf(String(value)) > 0).length > 0
+      prt.zips.filter((value) => zips.indexOf(String(value)) !== -1).length > 0
     ) {
       regionTagNames.push(prt.tag)
     }
@@ -93,7 +93,7 @@ async function processPopuliPerson(personId: number, person: Person) {
     // tag from states
     if (
       prt.states !== undefined &&
-      prt.states.filter((value) => states.indexOf(value) > 0).length > 0
+      prt.states.filter((value) => states.indexOf(value) !== -1).length > 0
     ) {
       regionTagNames.push(prt.tag)
     }
@@ -208,11 +208,11 @@ async function processMailChimpPerson(person: Person) {
         LNAME: "",
       }
       // update first/last name
-      if (person.first !== mcMember.merge_fields.FNAME) {
+      if (
+        person.first !== mcMember.merge_fields.FNAME ||
+        person.last !== mcMember.merge_fields.LNAME
+      ) {
         merge_fields.FNAME = person.first
-        doUpdate = true
-      }
-      if (person.last !== mcMember.merge_fields.LNAME) {
         merge_fields.LNAME = person.last
         doUpdate = true
       }
