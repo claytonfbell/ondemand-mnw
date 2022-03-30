@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.4.0...v1.4.1) (2022-03-30)
+
+
+### Bug Fixes
+
+* Fixed first/last name update bug, fixed a tagging bug ([b8291f9](https://github.com/claytonfbell/ondemand-mnw/commit/b8291f94ce2e884003cdbd87f073b4aa1ff3120b))
+
 ## [1.4.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.3.0...v1.4.0) (2022-03-17)
 
 
