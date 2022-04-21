@@ -1,6 +1,7 @@
 import { Box } from "@mui/material"
 import { Tabs } from "material-ui-bootstrap"
 import { useState } from "react"
+import { AdminGenerateDiplomas } from "./AdminGenerateDiplomas"
 import { AdminUserActivityList } from "./AdminUserActivityList"
 import { AdminUsersList } from "./AdminUserList"
 import { AdminVideosList } from "./AdminVideosList"
@@ -14,7 +15,13 @@ export function AdminTools() {
       <Tabs
         selectedIndex={selected}
         onSelect={(newIndex) => setSelected(newIndex)}
-        tabs={["Webinars", "Videos", "User Activity", "Manage Users"]}
+        tabs={[
+          "Webinars",
+          "Videos",
+          "User Activity",
+          "Manage Users",
+          "Generate Diplomas",
+        ]}
       >
         <Box
           sx={{
@@ -25,6 +32,7 @@ export function AdminTools() {
           {selected === 1 ? <AdminVideosList /> : null}
           {selected === 2 ? <AdminUserActivityList /> : null}
           {selected === 3 ? <AdminUsersList /> : null}
+          {selected === 4 ? <AdminGenerateDiplomas /> : null}
         </Box>
       </Tabs>
     </>
