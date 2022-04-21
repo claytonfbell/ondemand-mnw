@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.0...v1.5.1) (2022-04-21)
+
+
+### Bug Fixes
+
+* added admin account ([67a32a0](https://github.com/claytonfbell/ondemand-mnw/commit/67a32a085440322a4dd5b0fb1d0ad63dc74fb63e))
+
 ## [1.5.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.4.1...v1.5.0) (2022-04-21)
 
 
