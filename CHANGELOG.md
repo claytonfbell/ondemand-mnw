@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.4.1...v1.5.0) (2022-04-21)
+
+
+### Features
+
+* New diploma generator tool ([0c0256b](https://github.com/claytonfbell/ondemand-mnw/commit/0c0256b2e6de585509836fc5babdf9c761479712))
+
 ### [1.4.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.4.0...v1.4.1) (2022-03-30)
 
 
