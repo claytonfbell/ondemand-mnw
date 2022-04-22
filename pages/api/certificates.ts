@@ -3,7 +3,7 @@ import AdmZip from "adm-zip"
 import fs from "fs"
 import moment from "moment"
 import { NextApiResponse } from "next"
-import { PDFDocument, PDFFont, rgb } from "pdf-lib"
+import { PDFDocument, PDFFont, rgb, StandardFonts } from "pdf-lib"
 import { GenerateCertificatesRequest } from "../../lib/api/GenerateCertificatesRequest"
 import { GenerateCertificatesResponse } from "../../lib/api/GenerateCertificatesResponse"
 import { buildResponse } from "../../lib/server/buildResponse"
@@ -88,69 +88,57 @@ async function generateCertificatePdf({
   )
   pdfDoc.registerFontkit(fontkit)
 
-  const brandFontBytes = fs.readFileSync(`${process.cwd()}/brandon_re.ttf`)
-  const brandonFont = await pdfDoc.embedFont(brandFontBytes)
+  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
 
   const pages = pdfDoc.getPages()
   const firstPage = pages[0]
   const { width, height } = firstPage.getSize()
 
-  // draw subtitle centered
-  const subtitle = "OF ATTENDANCE"
-  firstPage.drawText(subtitle, {
-    x: width / 2 - brandonFont.widthOfTextAtSize(subtitle, 14) / 2,
-    y: height / 2 + 92,
-    size: 14,
-    font: brandonFont,
-    color: rgb(0.2, 0.2, 0.2),
-  })
-
   // draw eventName centered
   const eventNameUpper = eventName.toUpperCase()
   firstPage.drawText(eventNameUpper, {
-    x: width / 2 - brandonFont.widthOfTextAtSize(eventNameUpper, 14) / 2,
-    y: height / 2 + 70,
+    x: width / 2 - helveticaFont.widthOfTextAtSize(eventNameUpper, 14) / 2,
+    y: height / 2 + 82,
     size: 14,
-    font: brandonFont,
+    font: helveticaFont,
     color: rgb(0.2, 0.2, 0.2),
   })
 
   // draw name centered
   firstPage.drawText(names, {
-    x: width / 2 - brandonFont.widthOfTextAtSize(names, 18) / 2,
+    x: width / 2 - helveticaFont.widthOfTextAtSize(names, 18) / 2,
     y: height / 2 + 27,
     size: 18,
-    font: brandonFont,
+    font: helveticaFont,
     color: rgb(0.2, 0.2, 0.2),
   })
 
   // draw description
-  firstPage.drawText(wrapText(description, brandonFont, 8, 275), {
+  firstPage.drawText(wrapText(description, helveticaFont, 7, 320), {
     x: 70,
     y: 190,
-    size: 8,
-    font: brandonFont,
+    size: 7,
+    font: helveticaFont,
     color: rgb(0.2, 0.2, 0.2),
     lineHeight: 9,
   })
-
   // draw date - right aligned
   const displayDate = moment(date).format("LL")
   firstPage.drawText(displayDate, {
-    x: width - 82 - brandonFont.widthOfTextAtSize(displayDate, 14),
+    x: width - 76 - helveticaFont.widthOfTextAtSize(displayDate, 14),
     y: 186,
     size: 14,
-    font: brandonFont,
+    font: helveticaFont,
     color: rgb(0.2, 0.2, 0.2),
     lineHeight: 9,
   })
 
   // draw presenter name - right aligned
   firstPage.drawText(presenterName, {
-    x: width - 82 - brandonFont.widthOfTextAtSize(presenterName, 14),
-    y: 168,
+    x: width - 76 - helveticaFont.widthOfTextAtSize(presenterName, 14),
+    y: 166,
     size: 14,
-    font: brandonFont,
+    font: helveticaFont,
     color: rgb(0.2, 0.2, 0.2),
     lineHeight: 9,
   })
@@ -188,8 +176,8 @@ function wrapText(
     const word = allWords.shift()
     if (word !== undefined) {
       if (font.widthOfTextAtSize([...line, word].join(" "), fontSize) > width) {
-        lines.push([...line, word].join(" "))
-        line = []
+        lines.push([...line].join(" "))
+        line = [word]
       } else {
         line.push(word)
       }
@@ -198,5 +186,6 @@ function wrapText(
   if (line.length > 0) {
     lines.push(line.join(" "))
   }
+  console.log(lines.join("\n"))
   return lines.join("\n")
 }
