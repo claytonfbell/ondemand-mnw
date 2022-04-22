@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.2](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.1...v1.5.2) (2022-04-22)
+
+
+### Bug Fixes
+
+* certificate adjustments, renamed from diploma ([ac1801c](https://github.com/claytonfbell/ondemand-mnw/commit/ac1801c8d2aef4aec44b6ce6d51ff40d29497105))
+
 ### [1.5.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.0...v1.5.1) (2022-04-21)
 
 
