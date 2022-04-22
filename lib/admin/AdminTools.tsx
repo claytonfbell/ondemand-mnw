@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import { Tabs } from "material-ui-bootstrap"
 import { useState } from "react"
-import { AdminGenerateDiplomas } from "./AdminGenerateDiplomas"
+import { AdminGenerateCertificates } from "./AdminGenerateCertificates"
 import { AdminUserActivityList } from "./AdminUserActivityList"
 import { AdminUsersList } from "./AdminUserList"
 import { AdminVideosList } from "./AdminVideosList"
@@ -20,7 +20,7 @@ export function AdminTools() {
           "Videos",
           "User Activity",
           "Manage Users",
-          "Generate Diplomas",
+          "Generate Certificates",
         ]}
       >
         <Box
@@ -32,7 +32,7 @@ export function AdminTools() {
           {selected === 1 ? <AdminVideosList /> : null}
           {selected === 2 ? <AdminUserActivityList /> : null}
           {selected === 3 ? <AdminUsersList /> : null}
-          {selected === 4 ? <AdminGenerateDiplomas /> : null}
+          {selected === 4 ? <AdminGenerateCertificates /> : null}
         </Box>
       </Tabs>
     </>

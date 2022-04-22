@@ -1,4 +1,4 @@
-export interface GenerateDiplomasRequest {
+export interface GenerateCertificatesRequest {
   names: string
   description: string
   date: string

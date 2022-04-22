@@ -4,8 +4,8 @@ import fs from "fs"
 import moment from "moment"
 import { NextApiResponse } from "next"
 import { PDFDocument, PDFFont, rgb } from "pdf-lib"
-import { GenerateDiplomasRequest } from "../../lib/api/GenerateDiplomasRequest"
-import { GenerateDiplomasResponse } from "../../lib/api/GenerateDiplomasResponse"
+import { GenerateCertificatesRequest } from "../../lib/api/GenerateCertificatesRequest"
+import { GenerateCertificatesResponse } from "../../lib/api/GenerateCertificatesResponse"
 import { buildResponse } from "../../lib/server/buildResponse"
 import { BadRequestException } from "../../lib/server/HttpException"
 import prisma from "../../lib/server/prisma"
@@ -22,7 +22,7 @@ async function handler(
 
     if (req.method === "POST") {
       const { names, description, date, instructorName } =
-        req.body as GenerateDiplomasRequest
+        req.body as GenerateCertificatesRequest
 
       validate({ description }).min(1)
       validate({ instructorName }).min(1)
@@ -35,11 +35,11 @@ async function handler(
         throw new BadRequestException("No names provided.")
       }
 
-      // passed validation - generate diplomas
+      // passed validation - generate certificates
       const files: string[] = []
       for (let i = 0; i < allNames.length; i++) {
         files.push(
-          await generateDiplomaPdf({
+          await generateCertificatePdf({
             names: allNames[i],
             description,
             date,
@@ -59,11 +59,11 @@ async function handler(
       fs.unlinkSync("/tmp/files.zip")
 
       // create a filename string for the front-end to use
-      const filename = `diplomas-${sanitizeFileName(instructorName)}-${moment(
-        date
-      ).format("YYYY-MM-DD")}.zip`
+      const filename = `certificates-${sanitizeFileName(
+        instructorName
+      )}-${moment(date).format("YYYY-MM-DD")}.zip`
 
-      const response: GenerateDiplomasResponse = {
+      const response: GenerateCertificatesResponse = {
         base64,
         filename,
       }
@@ -74,14 +74,14 @@ async function handler(
 
 export default withSession(handler)
 
-async function generateDiplomaPdf({
+async function generateCertificatePdf({
   names,
   description,
   date,
   instructorName,
-}: GenerateDiplomasRequest) {
+}: GenerateCertificatesRequest) {
   const pdfDoc = await PDFDocument.load(
-    fs.readFileSync(`${process.cwd()}/diploma-template.pdf`)
+    fs.readFileSync(`${process.cwd()}/certificate-template.pdf`)
   )
   pdfDoc.registerFontkit(fontkit)
 
@@ -95,7 +95,7 @@ async function generateDiplomaPdf({
   // draw name centered
   firstPage.drawText(names, {
     x: width / 2 - brandonFont.widthOfTextAtSize(names, 18) / 2,
-    y: height / 2 + 36,
+    y: height / 2 + 26,
     size: 18,
     font: brandonFont,
     color: rgb(0.2, 0.2, 0.2),

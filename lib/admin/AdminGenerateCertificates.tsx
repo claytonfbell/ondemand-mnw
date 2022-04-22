@@ -1,8 +1,8 @@
 import { Form } from "material-ui-pack"
 import moment from "moment"
 import { useState } from "react"
-import { useGenerateDiplomas } from "../api/api"
-import { GenerateDiplomasRequest } from "../api/GenerateDiplomasRequest"
+import { useGenerateCertificates } from "../api/api"
+import { GenerateCertificatesRequest } from "../api/GenerateCertificatesRequest"
 
 const description = `DESCRIPTION: Handwork supports concentration and engagement in the developing elementary 
 child and can offer beautiful opportunities for follow up work in any area. We encourage, inspire 
@@ -12,8 +12,8 @@ bring inspirational handwork into the prepared environment through our stories, 
 personal touches in the space. We will think through how handwork can reflect the community 
 where you spend your days ensuring that everyone is represented and seen.`
 
-export function AdminGenerateDiplomas() {
-  const [state, setState] = useState<GenerateDiplomasRequest>({
+export function AdminGenerateCertificates() {
+  const [state, setState] = useState<GenerateCertificatesRequest>({
     names: "Clayton Bell\nAngelika Steinberg",
     description: description.split("\n").join(""),
     date: moment().format("YYYY-MM-DD"),
@@ -21,13 +21,13 @@ export function AdminGenerateDiplomas() {
   })
 
   const {
-    mutateAsync: generateDiplomas,
+    mutateAsync: generateCertificates,
     isLoading,
     error,
-  } = useGenerateDiplomas()
+  } = useGenerateCertificates()
 
   function handleSubmit() {
-    generateDiplomas(state)
+    generateCertificates(state)
   }
 
   return (
@@ -37,7 +37,7 @@ export function AdminGenerateDiplomas() {
       onSubmit={handleSubmit}
       state={state}
       setState={setState}
-      submitLabel="Generate Diplomas"
+      submitLabel="Generate Certificates"
       schema={{
         names: { type: "text", multiline: true, rows: 7 },
         instructorName: "capitalize",

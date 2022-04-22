@@ -4,8 +4,8 @@ import { AuthcodeRequestResponse } from "./AuthcodeRequestResponse"
 import { AuthenticationRequest } from "./AuthenticationRequest"
 import { CreateMuxAssetRequest } from "./CreateMuxAssetRequest"
 import { FetchMuxAssetResponse } from "./FetchMuxAssetResponse"
-import { GenerateDiplomasRequest } from "./GenerateDiplomasRequest"
-import { GenerateDiplomasResponse } from "./GenerateDiplomasResponse"
+import { GenerateCertificatesRequest } from "./GenerateCertificatesRequest"
+import { GenerateCertificatesResponse } from "./GenerateCertificatesResponse"
 import { LoginRequest } from "./LoginRequest"
 import { LoginResponse } from "./LoginResponse"
 import rest, { RestError } from "./rest"
@@ -228,11 +228,13 @@ export function useDeleteWebinarOnUser() {
   )
 }
 
-export function useGenerateDiplomas() {
-  return useMutation<void, RestError, GenerateDiplomasRequest>((params) =>
-    rest.post(`/diplomas`, params).then((resp: GenerateDiplomasResponse) => {
-      downloadBase64File(resp.base64, resp.filename)
-    })
+export function useGenerateCertificates() {
+  return useMutation<void, RestError, GenerateCertificatesRequest>((params) =>
+    rest
+      .post(`/certificates`, params)
+      .then((resp: GenerateCertificatesResponse) => {
+        downloadBase64File(resp.base64, resp.filename)
+      })
   )
 }
 
