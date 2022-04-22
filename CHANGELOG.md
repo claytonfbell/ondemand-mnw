@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.3](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.2...v1.5.3) (2022-04-22)
+
+
+### Bug Fixes
+
+* more certificate adjustments ([60afad7](https://github.com/claytonfbell/ondemand-mnw/commit/60afad72dc5866cdf0f12ac9f32370963bc15195))
+
 ### [1.5.2](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.1...v1.5.2) (2022-04-22)
 
 
