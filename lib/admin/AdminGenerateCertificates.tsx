@@ -1,5 +1,4 @@
 import { Form } from "material-ui-pack"
-import moment from "moment"
 import { useState } from "react"
 import { useGenerateCertificates } from "../api/api"
 import { GenerateCertificatesRequest } from "../api/GenerateCertificatesRequest"
@@ -14,10 +13,11 @@ where you spend your days ensuring that everyone is represented and seen.`
 
 export function AdminGenerateCertificates() {
   const [state, setState] = useState<GenerateCertificatesRequest>({
-    names: "Clayton Bell\nAngelika Steinberg",
+    names: "",
     description: description.split("\n").join(""),
-    date: moment().format("YYYY-MM-DD"),
-    instructorName: "Jane Doe",
+    date: "2022-04-21",
+    presenterName: "Andrea Fleener",
+    eventName: "Handwork as Inspiration",
   })
 
   const {
@@ -39,17 +39,19 @@ export function AdminGenerateCertificates() {
       setState={setState}
       submitLabel="Generate Certificates"
       schema={{
-        names: { type: "text", multiline: true, rows: 7 },
-        instructorName: "capitalize",
+        eventName: "capitalize",
+        presenterName: "capitalize",
         date: "date",
         description: { type: "text", multiline: true, rows: 7 },
+        names: { type: "text", multiline: true, rows: 7 },
       }}
       layout={{
-        instructorName: { xs: 6, sm: 4 },
+        eventName: { xs: 6, sm: 4 },
+        presenterName: { xs: 6, sm: 4 },
         names: { xs: 6, sm: 4 },
         date: { xs: 6, sm: 4 },
         description: { xs: 12, md: 8 },
-        submitButton: { xs: 12 },
+        submitButton: { xs: 12, sm: 4 },
       }}
     />
   )

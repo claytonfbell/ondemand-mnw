@@ -21,11 +21,12 @@ async function handler(
     await requireAdminAuthentication(req, prisma)
 
     if (req.method === "POST") {
-      const { names, description, date, instructorName } =
+      const { names, description, date, presenterName, eventName } =
         req.body as GenerateCertificatesRequest
 
       validate({ description }).min(1)
-      validate({ instructorName }).min(1)
+      validate({ presenterName }).min(1)
+      validate({ eventName }).min(1)
 
       const allNames = names
         .split("\n")
@@ -43,7 +44,8 @@ async function handler(
             names: allNames[i],
             description,
             date,
-            instructorName,
+            presenterName: presenterName,
+            eventName,
           })
         )
       }
@@ -59,9 +61,9 @@ async function handler(
       fs.unlinkSync("/tmp/files.zip")
 
       // create a filename string for the front-end to use
-      const filename = `certificates-${sanitizeFileName(
-        instructorName
-      )}-${moment(date).format("YYYY-MM-DD")}.zip`
+      const filename = `${moment(date).format("YYYY-MM-DD")}-${sanitizeFileName(
+        eventName
+      )}-${sanitizeFileName(presenterName)}.zip`
 
       const response: GenerateCertificatesResponse = {
         base64,
@@ -75,10 +77,11 @@ async function handler(
 export default withSession(handler)
 
 async function generateCertificatePdf({
+  eventName,
   names,
   description,
   date,
-  instructorName,
+  presenterName,
 }: GenerateCertificatesRequest) {
   const pdfDoc = await PDFDocument.load(
     fs.readFileSync(`${process.cwd()}/certificate-template.pdf`)
@@ -92,10 +95,30 @@ async function generateCertificatePdf({
   const firstPage = pages[0]
   const { width, height } = firstPage.getSize()
 
+  // draw subtitle centered
+  const subtitle = "OF ATTENDANCE"
+  firstPage.drawText(subtitle, {
+    x: width / 2 - brandonFont.widthOfTextAtSize(subtitle, 14) / 2,
+    y: height / 2 + 92,
+    size: 14,
+    font: brandonFont,
+    color: rgb(0.2, 0.2, 0.2),
+  })
+
+  // draw eventName centered
+  const eventNameUpper = eventName.toUpperCase()
+  firstPage.drawText(eventNameUpper, {
+    x: width / 2 - brandonFont.widthOfTextAtSize(eventNameUpper, 14) / 2,
+    y: height / 2 + 70,
+    size: 14,
+    font: brandonFont,
+    color: rgb(0.2, 0.2, 0.2),
+  })
+
   // draw name centered
   firstPage.drawText(names, {
     x: width / 2 - brandonFont.widthOfTextAtSize(names, 18) / 2,
-    y: height / 2 + 26,
+    y: height / 2 + 27,
     size: 18,
     font: brandonFont,
     color: rgb(0.2, 0.2, 0.2),
@@ -122,9 +145,9 @@ async function generateCertificatePdf({
     lineHeight: 9,
   })
 
-  // draw instructor name - right aligned
-  firstPage.drawText(instructorName, {
-    x: width - 82 - brandonFont.widthOfTextAtSize(instructorName, 14),
+  // draw presenter name - right aligned
+  firstPage.drawText(presenterName, {
+    x: width - 82 - brandonFont.widthOfTextAtSize(presenterName, 14),
     y: 168,
     size: 14,
     font: brandonFont,
