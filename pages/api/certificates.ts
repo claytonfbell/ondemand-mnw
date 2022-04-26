@@ -168,24 +168,31 @@ function wrapText(
   fontSize: number,
   width: number
 ) {
-  const lines: string[] = []
-  let line: string[] = []
+  function getLines(paragraph: string) {
+    const lines: string[] = []
+    let line: string[] = []
 
-  const allWords = text.split(" ")
-  while (allWords.length > 0) {
-    const word = allWords.shift()
-    if (word !== undefined) {
-      if (font.widthOfTextAtSize([...line, word].join(" "), fontSize) > width) {
-        lines.push([...line].join(" "))
-        line = [word]
-      } else {
-        line.push(word)
+    const allWords = paragraph.split(" ")
+    while (allWords.length > 0) {
+      const word = allWords.shift()
+      if (word !== undefined) {
+        if (
+          font.widthOfTextAtSize([...line, word].join(" "), fontSize) > width
+        ) {
+          lines.push([...line].join(" "))
+          line = [word]
+        } else {
+          line.push(word)
+        }
       }
     }
+    if (line.length > 0) {
+      lines.push(line.join(" "))
+    }
+    return lines.join("\n")
   }
-  if (line.length > 0) {
-    lines.push(line.join(" "))
-  }
-  console.log(lines.join("\n"))
-  return lines.join("\n")
+
+  const paragraphs = text.trim().split("\n")
+  const allLines = paragraphs.map((paragraph) => getLines(paragraph)).join("\n")
+  return allLines
 }
