@@ -192,7 +192,9 @@ function wrapText(
     return lines.join("\n")
   }
 
-  const paragraphs = text.trim().split("\n")
-  const allLines = paragraphs.map((paragraph) => getLines(paragraph)).join("\n")
-  return allLines
+  return text
+    .trim()
+    .split("\n")
+    .map((paragraph) => getLines(paragraph))
+    .join("\n")
 }
