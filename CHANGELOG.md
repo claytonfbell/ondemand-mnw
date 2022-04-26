@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.5](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.4...v1.5.5) (2022-04-26)
+
+
+### Bug Fixes
+
+* Fixed the wrapText function that had errors with line breaks ([b301dca](https://github.com/claytonfbell/ondemand-mnw/commit/b301dca97d2e4f8d7bf3120aaf758496caf44181))
+
 ### [1.5.4](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.3...v1.5.4) (2022-04-22)
 
 
