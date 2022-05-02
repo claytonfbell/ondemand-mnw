@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios"
 import md5 from "md5"
-import moment from "moment"
+import moment from "moment-timezone"
 import * as querystring from "querystring"
 import { IStatusMonitorPing } from "../../api/IStatusMonitorPing"
 import { getMiscSettings } from "../getMiscSettings"
@@ -290,12 +290,18 @@ export async function exportFromPopuliToMailChimp() {
           startTime
         ).fromNow()}\` with offset \`${offset}\`...`
       )
+
+      // important to use America/Los_Angeles timezone
+      const start_time = moment(startTime)
+        .tz("America/Los_Angeles")
+        .format("YYYY-MM-DD HH:mm:ss")
+
       const response = await axios
         .post(
           `https://montessorinorthwest.populiweb.com/api/`,
           querystring.stringify({
             task: "getUpdatedPeople",
-            start_time: moment(startTime).format("YYYY-MM-DD HH:mm:ss"),
+            start_time,
             offset,
           }),
           {
