@@ -137,6 +137,22 @@ async function processPopuliPerson(personId: number, person: Person) {
         .then((resp) => {
           return xml2json(resp.data) as Promise<AddTagResponse>
         })
+        .catch((err) => {
+          if (err.response) {
+            console.log(err.response.data) // => the response payload
+
+            // ignore some errors
+            const ignoreErrors = ["is not a valid person_id"]
+            const ignorable =
+              ignoreErrors.filter((x) => err.response.data.includes(x)).length >
+              0
+            if (ignorable) {
+              console.log("This error is ignorable")
+              return
+            }
+          }
+          throw err
+        })
     }
   }
 }
