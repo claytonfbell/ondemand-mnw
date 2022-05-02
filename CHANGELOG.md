@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.7](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.6...v1.5.7) (2022-05-02)
+
+
+### Bug Fixes
+
+* Ignore error `is not a valid person_id` for merged contacts ([691678f](https://github.com/claytonfbell/ondemand-mnw/commit/691678fcfd37ef4527ee5b702b3b482b3a86901d))
+
 ### [1.5.6](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.5...v1.5.6) (2022-05-02)
 
 
