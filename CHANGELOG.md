@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.7...v1.6.0) (2022-05-25)
+
+
+### Features
+
+* New Certificate table, upgraded prisma, pagination component and more ([f25110a](https://github.com/claytonfbell/ondemand-mnw/commit/f25110a444c6f8ecb4abbfae2e57bac80fdb0d3b))
+
 ### [1.5.7](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.6...v1.5.7) (2022-05-02)
 
 
