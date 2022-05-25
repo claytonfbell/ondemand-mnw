@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.6.0...v1.6.1) (2022-05-25)
+
+
+### Bug Fixes
+
+* Refetch person after populi tags processed for mailchimp processing ([bdc63f9](https://github.com/claytonfbell/ondemand-mnw/commit/bdc63f9f8da7ebbfde5be5b34cb6e6fc03538d57))
+
 ## [1.6.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.5.7...v1.6.0) (2022-05-25)
 
 
