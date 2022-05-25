@@ -262,7 +262,7 @@ async function processMailChimpPerson(person: Person) {
       })
       if (tags.length > 0 && mcMember !== null) {
         log(
-          `Applying tags to \`${mcMember?.email_address}\`: ${tags
+          `Applying Mailchimp tags to \`${mcMember?.email_address}\`: ${tags
             .map((x) => `\`${x.name}\``)
             .join(", ")}`
         )
@@ -274,6 +274,26 @@ async function processMailChimpPerson(person: Person) {
       }
     }
   }
+}
+
+async function fetchPersonFromPopuli(person_id: number) {
+  return await axios
+    .post(
+      `https://montessorinorthwest.populiweb.com/api/`,
+      querystring.stringify({
+        task: "getPerson",
+        person_id,
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: POPULI_API_KEY,
+        },
+      }
+    )
+    .then((resp) => {
+      return xml2json(resp.data) as Promise<GetPersonResponse>
+    })
 }
 
 export async function exportFromPopuliToMailChimp() {
@@ -360,23 +380,7 @@ export async function exportFromPopuliToMailChimp() {
 
           // FETCH MORE DETAILS IN POPULI
           // log(`Fetching details on \`${p.first_name}\` \`${p.last_name}\``)
-          const personResponse = await axios
-            .post(
-              `https://montessorinorthwest.populiweb.com/api/`,
-              querystring.stringify({
-                task: "getPerson",
-                person_id: p.id,
-              }),
-              {
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                  Authorization: POPULI_API_KEY,
-                },
-              }
-            )
-            .then((resp) => {
-              return xml2json(resp.data) as Promise<GetPersonResponse>
-            })
+          const personResponse = await fetchPersonFromPopuli(p.id)
 
           // LOOP EACH EMAIL ADDRESS
           const { response: person } = personResponse
@@ -384,9 +388,12 @@ export async function exportFromPopuliToMailChimp() {
           // UPDATE RECORD IN POPULI IF NEEDED
           await processPopuliPerson(p.id, person)
 
+          // refetch so we have updated info for mailchimp
+          const refetchedPersonResponse = await fetchPersonFromPopuli(p.id)
+
           // MAILCHIMP
           try {
-            await processMailChimpPerson(person)
+            await processMailChimpPerson(refetchedPersonResponse.response)
           } catch (err: any) {
             log(err.message)
             log(`**Skipping over error...**`)
