@@ -43,7 +43,7 @@ export function Inside(props: Props) {
         </Outside>
       ) : (
         <>
-          <AppBar position="static" color="default" variant="outlined">
+          <AppBar position="static" color="default" elevation={0}>
             <Toolbar>
               <Grid
                 container

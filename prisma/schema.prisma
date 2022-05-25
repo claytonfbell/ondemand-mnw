@@ -2,104 +2,119 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 model User {
-  id                    Int                     @id @default(autoincrement())
-  email                 String                  @unique @db.VarChar(255)
-  authCode              String?                 @unique @db.VarChar(255)
-  authCodeExpiresAt     DateTime?
-  isAdmin               Boolean                 @default(false)
-  activityLogs          UserAcivityLog[]
-  webinars              WebinarsOnUsers[]
+    id                Int               @id @default(autoincrement())
+    email             String            @unique @db.VarChar(255)
+    authCode          String?           @unique @db.VarChar(255)
+    authCodeExpiresAt DateTime?
+    isAdmin           Boolean           @default(false)
+    activityLogs      UserAcivityLog[]
+    webinars          WebinarsOnUsers[]
 }
 
 model Webinar {
-  id                    Int                     @id @default(autoincrement())
-  sku                   String                  @db.VarChar(255)
-  title                 String                  @db.VarChar(255)
-  description           String                  @db.VarChar(4000)
-  surveyUrl             String                  @db.VarChar(1000)
-  muxAssets             MuxAssetsOnWebinars[]
-  users                 WebinarsOnUsers[]
+    id          Int                   @id @default(autoincrement())
+    sku         String                @db.VarChar(255)
+    title       String                @db.VarChar(255)
+    description String                @db.VarChar(4000)
+    surveyUrl   String                @db.VarChar(1000)
+    muxAssets   MuxAssetsOnWebinars[]
+    users       WebinarsOnUsers[]
 }
 
 model WebinarsOnUsers {
-  webinar               Webinar                 @relation(fields: [webinarId], references: [id])
-  webinarId             Int
-  user                  User                    @relation(fields: [userId], references: [id])
-  userId                Int
-  expiresAt             DateTime       
-  order                 SquarespaceOrder?       @relation(fields: [orderId], references: [id])
-  orderId               String?                 @db.VarChar(255)
-  @@id([webinarId, userId])
+    webinar   Webinar           @relation(fields: [webinarId], references: [id])
+    webinarId Int
+    user      User              @relation(fields: [userId], references: [id])
+    userId    Int
+    expiresAt DateTime
+    order     SquarespaceOrder? @relation(fields: [orderId], references: [id])
+    orderId   String?           @db.VarChar(255)
+
+    @@id([webinarId, userId])
 }
 
 model MuxAsset {
-  id                    String                  @id @db.VarChar(255)
-  originalFileName      String                  @db.VarChar(255)
-  md5                   String                  @unique @db.VarChar(255)
-  title                 String                  @db.VarChar(255)
-  webinars              MuxAssetsOnWebinars[]
+    id               String                @id @db.VarChar(255)
+    originalFileName String                @db.VarChar(255)
+    md5              String                @unique @db.VarChar(255)
+    title            String                @db.VarChar(255)
+    webinars         MuxAssetsOnWebinars[]
 }
 
 model MuxAssetsOnWebinars {
-  webinar               Webinar         @relation(fields: [webinarId], references: [id])
-  webinarId             Int
-  muxAsset              MuxAsset        @relation(fields: [muxAssetId], references: [id])
-  muxAssetId            String          @db.VarChar(255)
-  orderBy               Int
-  @@id([muxAssetId, webinarId])
+    webinar    Webinar  @relation(fields: [webinarId], references: [id])
+    webinarId  Int
+    muxAsset   MuxAsset @relation(fields: [muxAssetId], references: [id])
+    muxAssetId String   @db.VarChar(255)
+    orderBy    Int
+
+    @@id([muxAssetId, webinarId])
 }
 
 model SquarespaceOrder {
-  id                    String                  @id @db.VarChar(255)
-  orderNumber           String                  @db.VarChar(255)
-  createdOn             DateTime
-  modifiedOn            DateTime
-  customerEmail         String
-  fulfillmentStatus     FulfillmentStatus
-  sentLoginEmail        Boolean                 @default(false)
-  items                 SquarespaceOrderLineItem[]
-  webinarOnUsers        WebinarsOnUsers[]
-  @@index([customerEmail])
+    id                String                     @id @db.VarChar(255)
+    orderNumber       String                     @db.VarChar(255)
+    createdOn         DateTime
+    modifiedOn        DateTime
+    customerEmail     String
+    fulfillmentStatus FulfillmentStatus
+    sentLoginEmail    Boolean                    @default(false)
+    items             SquarespaceOrderLineItem[]
+    webinarOnUsers    WebinarsOnUsers[]
+
+    @@index([customerEmail])
 }
 
 model SquarespaceOrderLineItem {
-  id                    String                  @id @db.VarChar(255)
-  order                 SquarespaceOrder        @relation(fields: [orderId], references: [id])
-  orderId               String                  @db.VarChar(255)
-  sku                   String                  @db.VarChar(255)
-  applied               Boolean                 @default(false)
-  quantity              Int                     @default(0)
-  emails                String[]
-  @@index([sku])
+    id       String           @id @db.VarChar(255)
+    order    SquarespaceOrder @relation(fields: [orderId], references: [id])
+    orderId  String           @db.VarChar(255)
+    sku      String           @db.VarChar(255)
+    applied  Boolean          @default(false)
+    quantity Int              @default(0)
+    emails   String[]
+
+    @@index([sku])
 }
 
 enum FulfillmentStatus {
-  PENDING
-  FULFILLED
-  CANCELED
+    PENDING
+    FULFILLED
+    CANCELED
 }
 
 model UserAcivityLog {
-  id        Int         @id @default(autoincrement())
-  user      User        @relation(fields: [userId], references: [id])
-  userId    Int
-  time      DateTime
-  details   String
+    id      Int      @id @default(autoincrement())
+    user    User     @relation(fields: [userId], references: [id])
+    userId  Int
+    time    DateTime
+    details String
 }
 
 model MiscSettings {
-  id                                        Int         @id @default(autoincrement())
-  exportFromPopuliLastModifiedTime          DateTime
-  scrapeFromSquarespaceLastModifiedTimeB    DateTime?
+    id                                     Int       @id @default(autoincrement())
+    exportFromPopuliLastModifiedTime       DateTime
+    scrapeFromSquarespaceLastModifiedTimeB DateTime?
+}
+
+model Certificate {
+    id          Int     @id @default(autoincrement())
+    title       String  @db.VarChar(255)
+    description String  @db.VarChar(4000)
+    presenter   String  @db.VarChar(255)
+    hours       String  @db.VarChar(255)
+    date        String
+    displayDate Boolean
+    names       String  @db.VarChar(4000)
 }
 
 // npx prisma migrate dev --name init

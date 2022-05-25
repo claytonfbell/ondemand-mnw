@@ -4,14 +4,11 @@ import { AuthcodeRequestResponse } from "./AuthcodeRequestResponse"
 import { AuthenticationRequest } from "./AuthenticationRequest"
 import { CreateMuxAssetRequest } from "./CreateMuxAssetRequest"
 import { FetchMuxAssetResponse } from "./FetchMuxAssetResponse"
-import { GenerateCertificatesRequest } from "./GenerateCertificatesRequest"
-import { GenerateCertificatesResponse } from "./GenerateCertificatesResponse"
 import { LoginRequest } from "./LoginRequest"
 import { LoginResponse } from "./LoginResponse"
 import rest, { RestError } from "./rest"
 import { UploadRequest } from "./UploadRequest"
 import { UploadResponse } from "./UploadResponse"
-import { UserActivityLogWithUser } from "./UserActivityLogWithUser"
 import { UserWithWebinars } from "./UserWithWebinars"
 import { WebinarWithMuxAssets } from "./WebinarWithMuxAssets"
 
@@ -165,17 +162,6 @@ export function useDeleteMuxAsset() {
   )
 }
 
-/////////////////
-
-export function useFetchUserActivities() {
-  return useQuery<UserActivityLogWithUser[], RestError>(
-    ["userActivities"],
-    () => rest.get(`/userActivities`)
-  )
-}
-
-/////////////////
-
 export function useFetchUsers() {
   return useQuery<UserWithWebinars[], RestError>(["users"], () =>
     rest.get(`/users`)
@@ -226,25 +212,4 @@ export function useDeleteWebinarOnUser() {
       },
     }
   )
-}
-
-export function useGenerateCertificates() {
-  return useMutation<void, RestError, GenerateCertificatesRequest>((params) =>
-    rest
-      .post(`/certificates`, params)
-      .then((resp: GenerateCertificatesResponse) => {
-        downloadBase64File(resp.base64, resp.filename)
-      })
-  )
-}
-
-function downloadBase64File(contentBase64: string, fileName: string) {
-  const linkSource = `data:application/zip;base64,${contentBase64}`
-  const downloadLink = document.createElement("a")
-  document.body.appendChild(downloadLink)
-
-  downloadLink.href = linkSource
-  downloadLink.target = "_self"
-  downloadLink.download = fileName
-  downloadLink.click()
 }

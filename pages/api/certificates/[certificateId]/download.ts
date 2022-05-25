@@ -1,17 +1,19 @@
 import fontkit from "@pdf-lib/fontkit"
+import { Certificate } from "@prisma/client"
 import AdmZip from "adm-zip"
 import fs from "fs"
 import moment from "moment"
 import { NextApiResponse } from "next"
 import { PDFDocument, PDFFont, rgb, StandardFonts } from "pdf-lib"
-import { GenerateCertificatesRequest } from "../../lib/api/GenerateCertificatesRequest"
-import { GenerateCertificatesResponse } from "../../lib/api/GenerateCertificatesResponse"
-import { buildResponse } from "../../lib/server/buildResponse"
-import { BadRequestException } from "../../lib/server/HttpException"
-import prisma from "../../lib/server/prisma"
-import { requireAdminAuthentication } from "../../lib/server/requireAuthentication"
-import withSession, { NextIronRequest } from "../../lib/server/session"
-import validate from "../../lib/server/validate"
+import { GenerateCertificatesResponse } from "../../../../lib/api/GenerateCertificatesResponse"
+import { buildResponse } from "../../../../lib/server/buildResponse"
+import {
+  BadRequestException,
+  NotFoundException,
+} from "../../../../lib/server/HttpException"
+import prisma from "../../../../lib/server/prisma"
+import { requireAdminAuthentication } from "../../../../lib/server/requireAuthentication"
+import withSession, { NextIronRequest } from "../../../../lib/server/session"
 
 async function handler(
   req: NextIronRequest,
@@ -19,16 +21,17 @@ async function handler(
 ): Promise<void> {
   buildResponse(res, async () => {
     await requireAdminAuthentication(req, prisma)
+    const certificateId = parseInt(req.query.certificateId as string)
+
+    const certificate = await prisma.certificate.findFirst({
+      where: { id: certificateId },
+    })
+    if (certificate === null) {
+      throw new NotFoundException("Certificate not found")
+    }
 
     if (req.method === "POST") {
-      const { names, description, date, presenterName, eventName } =
-        req.body as GenerateCertificatesRequest
-
-      validate({ description }).min(1)
-      validate({ presenterName }).min(1)
-      validate({ eventName }).min(1)
-
-      const allNames = names
+      const allNames = certificate.names
         .split("\n")
         .map((name) => name.trim())
         .filter((name) => name.length > 0)
@@ -41,11 +44,8 @@ async function handler(
       for (let i = 0; i < allNames.length; i++) {
         files.push(
           await generateCertificatePdf({
+            ...certificate,
             names: allNames[i],
-            description,
-            date,
-            presenterName: presenterName,
-            eventName,
           })
         )
       }
@@ -61,9 +61,11 @@ async function handler(
       fs.unlinkSync("/tmp/files.zip")
 
       // create a filename string for the front-end to use
-      const filename = `${moment(date).format("YYYY-MM-DD")}-${sanitizeFileName(
-        eventName
-      )}-${sanitizeFileName(presenterName)}.zip`
+      const filename = `${moment(certificate.date).format(
+        "YYYY-MM-DD"
+      )}-${sanitizeFileName(certificate.title)}-${sanitizeFileName(
+        certificate.presenter
+      )}.zip`
 
       const response: GenerateCertificatesResponse = {
         base64,
@@ -77,12 +79,14 @@ async function handler(
 export default withSession(handler)
 
 async function generateCertificatePdf({
-  eventName,
+  title,
   names,
   description,
   date,
-  presenterName,
-}: GenerateCertificatesRequest) {
+  displayDate,
+  presenter,
+  hours,
+}: Certificate) {
   const pdfDoc = await PDFDocument.load(
     fs.readFileSync(`${process.cwd()}/certificate-template.pdf`)
   )
@@ -95,7 +99,7 @@ async function generateCertificatePdf({
   const { width, height } = firstPage.getSize()
 
   // draw eventName centered
-  const eventNameUpper = eventName.toUpperCase()
+  const eventNameUpper = title.toUpperCase()
   firstPage.drawText(eventNameUpper, {
     x: width / 2 - helveticaFont.widthOfTextAtSize(eventNameUpper, 14) / 2,
     y: height / 2 + 82,
@@ -103,6 +107,17 @@ async function generateCertificatePdf({
     font: helveticaFont,
     color: rgb(0.2, 0.2, 0.2),
   })
+
+  if (hours.length > 0) {
+    const hoursText = `${hours} hours`
+    firstPage.drawText(hoursText, {
+      x: width / 2 - helveticaFont.widthOfTextAtSize(hoursText, 14) / 2,
+      y: height / 2 + 62,
+      size: 14,
+      font: helveticaFont,
+      color: rgb(0.2, 0.2, 0.2),
+    })
+  }
 
   // draw name centered
   firstPage.drawText(names, {
@@ -123,19 +138,21 @@ async function generateCertificatePdf({
     lineHeight: 9,
   })
   // draw date - right aligned
-  const displayDate = moment(date).format("LL")
-  firstPage.drawText(displayDate, {
-    x: width - 76 - helveticaFont.widthOfTextAtSize(displayDate, 14),
-    y: 186,
-    size: 14,
-    font: helveticaFont,
-    color: rgb(0.2, 0.2, 0.2),
-    lineHeight: 9,
-  })
+  if (displayDate === true) {
+    const dateFormatted = moment(date).format("LL")
+    firstPage.drawText(dateFormatted, {
+      x: width - 76 - helveticaFont.widthOfTextAtSize(dateFormatted, 14),
+      y: 186,
+      size: 14,
+      font: helveticaFont,
+      color: rgb(0.2, 0.2, 0.2),
+      lineHeight: 9,
+    })
+  }
 
   // draw presenter name - right aligned
-  firstPage.drawText(presenterName, {
-    x: width - 76 - helveticaFont.widthOfTextAtSize(presenterName, 14),
+  firstPage.drawText(presenter, {
+    x: width - 76 - helveticaFont.widthOfTextAtSize(presenter, 14),
     y: 166,
     size: 14,
     font: helveticaFont,

@@ -34,7 +34,6 @@ export function AdminWebinarsList() {
     <>
       <Title label="Webinars" />
       <Spacer />
-      {sortBy} {ascendingSku ? "true" : "false"}
       <ResponsiveTable
         onEdit={(webinar) => setOpenWebinar(webinar)}
         onDelete={(webinar) => setWebinarToDelete(webinar)}
