@@ -28,14 +28,6 @@ const POPULI_API_KEY = process.env.POPULI_API_KEY || ""
 const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY || ""
 const MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID || ""
 
-interface LogMessage {
-  id: number
-  message: string
-}
-
-let messageCount = 0
-const getMessageId = () => messageCount++
-
 const logs: string[] = []
 function log(str: string) {
   logs.push(str)
@@ -119,46 +111,62 @@ async function processPopuliPerson(personId: number, person: Person) {
     )
 
     for (let i = 0; i < addTags.length; i++) {
-      const response = await axios
-        .post(
-          `https://montessorinorthwest.populiweb.com/api/`,
-          querystring.stringify({
-            task: "addTag",
-            person_id: personId,
-            tag: addTags[i],
-          }),
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: POPULI_API_KEY,
-            },
-          }
-        )
-        .then((resp) => {
-          return xml2json(resp.data) as Promise<AddTagResponse>
-        })
-        .catch((err) => {
-          if (err.response) {
-            console.log(err.response.data) // => the response payload
-
-            // ignore some errors
-            const ignoreErrors = ["is not a valid person_id"]
-            const ignorable =
-              ignoreErrors.filter((x) => err.response.data.includes(x)).length >
-              0
-            if (ignorable) {
-              console.log("This error is ignorable")
-              return
+      const doPost = async () =>
+        await axios
+          .post(
+            `https://montessorinorthwest.populiweb.com/api/`,
+            querystring.stringify({
+              task: "addTag",
+              person_id: personId,
+              tag: addTags[i],
+            }),
+            {
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                Authorization: POPULI_API_KEY,
+              },
             }
-          }
+          )
+          .then((resp) => {
+            return xml2json(resp.data) as Promise<AddTagResponse>
+          })
+          .catch((err) => {
+            if (err.response) {
+              console.log(err.response.data) // => the response payload
+              console.log(`person:`) // => the response payload
+              console.log(person) // => the response payload
+
+              // ignore some errors
+              const ignoreErrors = ["is not a valid person_id"]
+              const ignorable =
+                ignoreErrors.filter((x) => err.response.data.includes(x))
+                  .length > 0
+              if (ignorable) {
+                console.log("This error is ignorable")
+                return
+              }
+            }
+            throw err
+          })
+
+      try {
+        await doPost()
+      } catch (err: any) {
+        if (err.response.status === 429) {
+          console.log("Too many requests. Waiting 20 seconds")
+          await new Promise((resolve) => setTimeout(resolve, 20000))
+          await doPost()
+        } else {
           throw err
-        })
+        }
+      }
     }
   }
+  return addTags
 }
 
 // MAILCHIMP ADD / UPDATE
-async function processMailChimpPerson(person: Person) {
+async function processMailChimpPerson(person: Person, addTags: string[]) {
   // log(`processMailChimpPerson ${JSON.stringify(person)}`)
 
   const mailChimpAuth = {
@@ -254,6 +262,11 @@ async function processMailChimpPerson(person: Person) {
         ? [person.tags.tag]
         : []
 
+      // include the newly added tags also
+      addTags.forEach((x) => {
+        populiTags.push({ id: 0, name: x, system: "unknown" })
+      })
+
       const tags: MailChimpTag[] = []
       populiTags.forEach((x) => {
         if (mcMember?.tags.find((y) => y.name === x.name) === undefined) {
@@ -277,23 +290,37 @@ async function processMailChimpPerson(person: Person) {
 }
 
 async function fetchPersonFromPopuli(person_id: number) {
-  return await axios
-    .post(
-      `https://montessorinorthwest.populiweb.com/api/`,
-      querystring.stringify({
-        task: "getPerson",
-        person_id,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: POPULI_API_KEY,
-        },
-      }
-    )
-    .then((resp) => {
-      return xml2json(resp.data) as Promise<GetPersonResponse>
-    })
+  async function doFetch() {
+    return await axios
+      .post(
+        `https://montessorinorthwest.populiweb.com/api/`,
+        querystring.stringify({
+          task: "getPerson",
+          person_id,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: POPULI_API_KEY,
+          },
+        }
+      )
+      .then((resp) => {
+        return xml2json(resp.data) as Promise<GetPersonResponse>
+      })
+  }
+
+  try {
+    return await doFetch()
+  } catch (err: any) {
+    if (err.response?.status === 429) {
+      log("Too many requests, sleeping for 20 seconds")
+      await new Promise((resolve) => setTimeout(resolve, 20000))
+      return await doFetch()
+    } else {
+      throw err
+    }
+  }
 }
 
 export async function exportFromPopuliToMailChimp() {
@@ -382,21 +409,21 @@ export async function exportFromPopuliToMailChimp() {
           // log(`Fetching details on \`${p.first_name}\` \`${p.last_name}\``)
           const personResponse = await fetchPersonFromPopuli(p.id)
 
-          // LOOP EACH EMAIL ADDRESS
           const { response: person } = personResponse
 
-          // UPDATE RECORD IN POPULI IF NEEDED
-          await processPopuliPerson(p.id, person)
+          if (person.status === "DELETED") {
+            log(`Skipping DELETED person ${p.id}`)
+          } else {
+            // UPDATE RECORD IN POPULI IF NEEDED
+            const addTags = await processPopuliPerson(p.id, person)
 
-          // refetch so we have updated info for mailchimp
-          const refetchedPersonResponse = await fetchPersonFromPopuli(p.id)
-
-          // MAILCHIMP
-          try {
-            await processMailChimpPerson(refetchedPersonResponse.response)
-          } catch (err: any) {
-            log(err.message)
-            log(`**Skipping over error...**`)
+            // MAILCHIMP
+            try {
+              await processMailChimpPerson(person, addTags)
+            } catch (err: any) {
+              log(err.message)
+              log(`**Skipping over error...**`)
+            }
           }
         }
         offset += updatedPeople.length

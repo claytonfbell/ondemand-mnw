@@ -16,6 +16,7 @@ export interface Person {
   phone: Phone[]
   gender: string
   tags: PopuliTags
+  status: "DELETED" | string
 }
 
 export interface Email {
