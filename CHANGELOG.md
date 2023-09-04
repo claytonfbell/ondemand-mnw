@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.6.2...v1.7.0) (2023-09-04)
+
+
+### Features
+
+* added admin tool to export mailing list contact csv files ([81c7e8e](https://github.com/claytonfbell/ondemand-mnw/commit/81c7e8e0e9b83bc1d731055379cc814f09b4ab07))
+
+
+### Bug Fixes
+
+* updated approved admin list ([1361334](https://github.com/claytonfbell/ondemand-mnw/commit/1361334404b2710bdf1b20edeb5f64da352d9283))
+
 ### [1.6.2](https://github.com/claytonfbell/ondemand-mnw/compare/v1.6.1...v1.6.2) (2022-05-26)
 
 
