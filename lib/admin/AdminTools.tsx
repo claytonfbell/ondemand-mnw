@@ -3,6 +3,7 @@ import { Tabs } from "material-ui-bootstrap"
 import { useState } from "react"
 import { AdminCertificateList } from "../../src/certificates/AdminCertificateList"
 import { AdminUserActivityList } from "../../src/userActivity/AdminUserActivityList"
+import { AdminExportPopuliMailingLists } from "./AdminExportPopuliMailingLists"
 import { AdminUsersList } from "./AdminUserList"
 import { AdminVideosList } from "./AdminVideosList"
 import { AdminWebinarsList } from "./AdminWebinarsList"
@@ -21,6 +22,7 @@ export function AdminTools() {
           "User Activity",
           "Manage Users",
           "Generate Certificates",
+          "Export Populi Mailing Lists",
         ]}
       >
         <Box
@@ -33,6 +35,7 @@ export function AdminTools() {
           {selected === 2 ? <AdminUserActivityList /> : null}
           {selected === 3 ? <AdminUsersList /> : null}
           {selected === 4 ? <AdminCertificateList /> : null}
+          {selected === 5 ? <AdminExportPopuliMailingLists /> : null}
         </Box>
       </Tabs>
     </>
