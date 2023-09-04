@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.7.0...v1.7.1) (2023-09-04)
+
+
+### Bug Fixes
+
+* disabled old export to mailchimp script ([3f55d65](https://github.com/claytonfbell/ondemand-mnw/commit/3f55d652ccd79a4c1014450cddb8b748cc1e5cb7))
+
 ## [1.7.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.6.2...v1.7.0) (2023-09-04)
 
 
