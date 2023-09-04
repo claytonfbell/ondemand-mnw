@@ -1,7 +1,9 @@
 import { NextApiResponse } from "next"
+import {
+  NotFoundException,
+  UnauthorizedException,
+} from "../../lib/server/HttpException"
 import { buildResponse } from "../../lib/server/buildResponse"
-import { UnauthorizedException } from "../../lib/server/HttpException"
-import { exportFromPopuliToMailChimp } from "../../lib/server/populi-mailchimp/exportFromPopuliToMailChimp"
 import withSession, { NextIronRequest } from "../../lib/server/session"
 
 async function handler(
@@ -13,8 +15,9 @@ async function handler(
       if (req.query.ck !== process.env.CRON_KEY) {
         throw new UnauthorizedException()
       }
-      await exportFromPopuliToMailChimp()
-      return true
+      throw new NotFoundException("This has been discontinued.")
+      //   await exportFromPopuliToMailChimp()
+      //   return true
     }
   })
 }
