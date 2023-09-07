@@ -1,4 +1,4 @@
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import rest, { RestError } from "../../lib/api/rest"
 import { FetchUserAcitivityLogParams } from "./FetchUserAcitivityLogParams"
 import { UserActivityLogWithUserPaginated } from "./UserActivityLogWithUserPaginated"

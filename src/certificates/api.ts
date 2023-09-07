@@ -1,5 +1,5 @@
 import { Certificate } from "@prisma/client"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { GenerateCertificatesResponse } from "../../lib/api/GenerateCertificatesResponse"
 import rest, { RestError } from "../../lib/api/rest"
 import { CertificatesPaginated } from "./CertificatesPaginated"
@@ -20,7 +20,7 @@ export function useCreateCertificate() {
     (params) => rest.post(`/certificates`, params),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("certificates")
+        queryClient.refetchQueries(["certificates"])
       },
     }
   )
@@ -32,7 +32,7 @@ export function useUpdateCertificate() {
     (params) => rest.put(`/certificates/${params.id}`, params),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("certificates")
+        queryClient.refetchQueries(["certificates"])
       },
     }
   )
@@ -44,7 +44,7 @@ export function useDeleteCertificate() {
     (params) => rest.delete(`/certificates/${params.id}`),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("certificates")
+        queryClient.refetchQueries(["certificates"])
       },
     }
   )

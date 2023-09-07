@@ -1,16 +1,16 @@
 import { MuxAsset, Webinar, WebinarsOnUsers } from "@prisma/client"
-import { useMutation, useQuery, useQueryClient } from "react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { AuthcodeRequestResponse } from "./AuthcodeRequestResponse"
 import { AuthenticationRequest } from "./AuthenticationRequest"
 import { CreateMuxAssetRequest } from "./CreateMuxAssetRequest"
 import { FetchMuxAssetResponse } from "./FetchMuxAssetResponse"
 import { LoginRequest } from "./LoginRequest"
 import { LoginResponse } from "./LoginResponse"
-import rest, { RestError } from "./rest"
 import { UploadRequest } from "./UploadRequest"
 import { UploadResponse } from "./UploadResponse"
 import { UserWithWebinars } from "./UserWithWebinars"
 import { WebinarWithMuxAssets } from "./WebinarWithMuxAssets"
+import rest, { RestError } from "./rest"
 
 rest.setBaseURL(`/api`)
 
@@ -46,7 +46,7 @@ export function useAuthenticate() {
     (req) => rest.post(`/authenticate`, req),
     {
       onSuccess: (data) => {
-        queryClient.setQueryData("login", data)
+        queryClient.setQueryData(["login"], data)
       },
     }
   )
@@ -61,7 +61,7 @@ export function useCreateWebinar() {
     (data) => rest.post(`/webinars`, data),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("webinars")
+        queryClient.refetchQueries(["webinars"])
       },
     }
   )
@@ -85,7 +85,7 @@ export function useUpdateWebinar() {
     (data) => rest.put(`/webinars/${data.id}`, data),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("webinars")
+        queryClient.refetchQueries(["webinars"])
       },
     }
   )
@@ -97,7 +97,7 @@ export function useDeleteWebinar() {
     (data) => rest.delete(`/webinars/${data.id}`),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("webinars")
+        queryClient.refetchQueries(["webinars"])
       },
     }
   )
@@ -130,7 +130,7 @@ export function useCreateMuxAsset() {
     (data) => rest.post(`/muxAssets`, data),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("muxAssets")
+        queryClient.refetchQueries(["muxAssets"])
       },
     }
   )
@@ -142,8 +142,8 @@ export function useUpdateMuxAsset() {
     (data) => rest.put(`/muxAssets/${data.id}`, data),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("muxAssets")
-        queryClient.refetchQueries("webinars")
+        queryClient.refetchQueries(["muxAssets"])
+        queryClient.refetchQueries(["webinars"])
       },
     }
   )
@@ -155,8 +155,8 @@ export function useDeleteMuxAsset() {
     (assetId) => rest.delete(`/muxAssets/${assetId}`),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("muxAssets")
-        queryClient.refetchQueries("webinars")
+        queryClient.refetchQueries(["muxAssets"])
+        queryClient.refetchQueries(["webinars"])
       },
     }
   )
@@ -174,7 +174,7 @@ export function useCreateUser() {
     (params) => rest.post(`/users`, params),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("users")
+        queryClient.refetchQueries(["users"])
       },
     }
   )
@@ -195,7 +195,7 @@ export function useUpsertWebinarOnUser() {
       rest.put(`/users/${params.userId}/webinars/${params.webinarId}`, params),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("users")
+        queryClient.refetchQueries(["users"])
       },
     }
   )
@@ -208,7 +208,7 @@ export function useDeleteWebinarOnUser() {
       rest.delete(`/users/${userId}/webinars/${webinarId}`),
     {
       onSuccess: () => {
-        queryClient.refetchQueries("users")
+        queryClient.refetchQueries(["users"])
       },
     }
   )

@@ -1,10 +1,9 @@
 import { CacheProvider, EmotionCache } from "@emotion/react"
 import CssBaseline from "@mui/material/CssBaseline"
-import { createTheme, ThemeProvider } from "@mui/material/styles"
+import { ThemeProvider, createTheme } from "@mui/material/styles"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { AppProps } from "next/app"
 import Head from "next/head"
-import * as React from "react"
-import { QueryClient, QueryClientProvider } from "react-query"
 import createEmotionCache from "../lib/createEmotionCache"
 import theme from "../lib/theme"
 
