@@ -43,6 +43,11 @@ vim /etc/nginx/sites-available/default
                 proxy_set_header Connection 'upgrade';
                 proxy_set_header Host $host;
                 proxy_cache_bypass $http_upgrade;
+
+                # to allow long running requests
+                proxy_read_timeout 300;
+                proxy_connect_timeout 300;
+                proxy_send_timeout 300;
         }
         error_page 502 503 /503.html;
         location /503.html {}
