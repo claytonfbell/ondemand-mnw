@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.7.1...v1.8.0) (2023-09-07)
+
+
+### Features
+
+* upgrade next 12, react 18 ([5f7fc9f](https://github.com/claytonfbell/ondemand-mnw/commit/5f7fc9fcef6ac94d6f12ba543929f4aefb8bcd83))
+* upgrade next 13, mui packages ([bb6efaf](https://github.com/claytonfbell/ondemand-mnw/commit/bb6efaf7f593de10aeba13c2aca7d01ca171a26b))
+* upgrade react-query v4 ([1231bcf](https://github.com/claytonfbell/ondemand-mnw/commit/1231bcfaf42a98e3cecf33abdf11cd6b86c8f659))
+
 ### [1.7.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.7.0...v1.7.1) (2023-09-04)
 
 
