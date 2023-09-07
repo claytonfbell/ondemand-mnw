@@ -9,11 +9,11 @@ import {
 import NextLink from "next/link"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
-import { useCheckLogin, useLogout } from "./api/api"
 import { AppErrorBoundary } from "./AppErrorBoundary"
 import { Login } from "./Login"
 import { LogoComponent } from "./LogoComponent"
 import { Outside } from "./Outside"
+import { useCheckLogin, useLogout } from "./api/api"
 
 interface Props {
   title: string
@@ -53,28 +53,26 @@ export function Inside(props: Props) {
               >
                 <Grid item>
                   <NextLink href="/">
-                    <a>
-                      <LogoComponent scale={0.5} />
-                    </a>
+                    <LogoComponent scale={0.5} />
                   </NextLink>
                 </Grid>
                 <Grid item>
                   {loginResponse.user.isAdmin === true ? (
                     <>
-                      <NextLink href="/">
-                        <Button
-                          variant={pathname === "/" ? "outlined" : "text"}
-                        >
-                          Main
-                        </Button>
-                      </NextLink>
-                      <NextLink href="/admin">
-                        <Button
-                          variant={pathname === "/admin" ? "outlined" : "text"}
-                        >
-                          Admin
-                        </Button>
-                      </NextLink>
+                      <Button
+                        component={NextLink}
+                        href="/"
+                        variant={pathname === "/" ? "outlined" : "text"}
+                      >
+                        Main
+                      </Button>
+                      <Button
+                        component={NextLink}
+                        href="/admin"
+                        variant={pathname === "/admin" ? "outlined" : "text"}
+                      >
+                        Admin
+                      </Button>
                     </>
                   ) : null}
                   <Button variant="text" onClick={() => logout()}>
