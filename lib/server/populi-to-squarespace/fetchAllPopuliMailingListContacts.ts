@@ -91,15 +91,18 @@ export async function fetchAllPopuliMailingListContacts(alumni: boolean) {
 
   // return as csv
   return papaparse.unparse(
-    allData.map((row) => {
-      return [row.firstName, row.lastName, row.email]
-    }),
+    [
+      ["Email Address", "First Name", "Last Name"],
+      ...allData.map((row) => {
+        return [row.email, row.firstName, row.lastName]
+      }),
+    ],
     {
       quotes: false, //or array of booleans
       quoteChar: '"',
       escapeChar: '"',
       delimiter: ",",
-      header: false,
+      header: true,
       newline: "\r\n",
       skipEmptyLines: false, //other option is 'greedy', meaning skip delimiters, quotes, and whitespace.
     }
