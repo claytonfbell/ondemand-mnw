@@ -17,7 +17,7 @@
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.8",
-    "@mui/lab": "^5.0.0-alpha.143",
+    "@mui/lab": "^5.0.0-alpha.89",
     "@mui/material": "^5.14.8",
     "@mux/mux-node": "^4.0.0",
     "@mux/upchunk": "^2.2.2",
