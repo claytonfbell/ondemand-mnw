@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.9.0...v1.9.1) (2024-03-03)
+
+
+### Bug Fixes
+
+* wrapped api calls to handle 429 too many request errors ([ac69334](https://github.com/claytonfbell/ondemand-mnw/commit/ac693345e627bb2072be94af0c073199f3b8b7b6))
+
 ## [1.9.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.8.0...v1.9.0) (2024-03-03)
 
 
