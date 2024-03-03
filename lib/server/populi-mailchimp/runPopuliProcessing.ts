@@ -1,18 +1,12 @@
 import axios, { AxiosError } from "axios"
-import md5 from "md5"
 import moment from "moment-timezone"
 import * as querystring from "querystring"
 import { IStatusMonitorPing } from "../../api/IStatusMonitorPing"
 import { getMiscSettings } from "../getMiscSettings"
 import prisma from "../prisma"
-import { MailChimpCreateMemberError } from "./models/MailChimpCreateMemberError"
-import { MailChimpMember } from "./models/MailChimpMember"
-import { MailChimpMergeFields } from "./models/MailChimpMergeFields"
-import { MailChimpTag } from "./models/MailChimpTag"
 import { AddTagResponse } from "./models/populi/AddTagResponse"
 import {
   Address,
-  Email,
   GetPersonResponse,
   Person,
   PopuliTag,
@@ -25,8 +19,6 @@ import { populiRegionTags } from "./populiRegionTags"
 import { xml2json } from "./xml2Json"
 
 const POPULI_API_KEY = process.env.POPULI_API_KEY || ""
-const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY || ""
-const MAILCHIMP_LIST_ID = process.env.MAILCHIMP_LIST_ID || ""
 
 const logs: string[] = []
 function log(str: string) {
@@ -165,130 +157,6 @@ async function processPopuliPerson(personId: number, person: Person) {
   return addTags
 }
 
-// MAILCHIMP ADD / UPDATE
-async function processMailChimpPerson(person: Person, addTags: string[]) {
-  // log(`processMailChimpPerson ${JSON.stringify(person)}`)
-
-  const mailChimpAuth = {
-    auth: {
-      username: "any",
-      password: MAILCHIMP_API_KEY,
-    },
-  }
-
-  const emails: Email[] = Array.isArray(person.email)
-    ? person.email
-    : person.email !== undefined
-    ? [person.email]
-    : []
-
-  for (let j = 0; j < emails.length; j++) {
-    // LOOKUP IN MAILCHIMP
-    let mcMember = await axios
-      .get(
-        `https://us7.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/${md5(
-          emails[j].address.toLowerCase()
-        )}`,
-        mailChimpAuth
-      )
-      .then((resp) => {
-        return resp.data as Promise<MailChimpMember>
-      })
-      .catch((err: AxiosError) => {
-        if (err.response?.status === 404) {
-          return null
-        }
-        throw err
-      })
-
-    // CREATE NEW MAILCHIMP MEMBER
-    if (mcMember === null && emails[j].no_mailings !== true) {
-      log(`Adding missing email \`${emails[j].address}\` to MailChimp...`)
-      mcMember = await axios
-        .post(
-          `https://us7.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members`,
-          {
-            email_address: emails[j].address,
-            status: "subscribed",
-          },
-          mailChimpAuth
-        )
-        .then((resp) => {
-          return resp.data as Promise<MailChimpMember>
-        })
-        .catch((e: AxiosError) => {
-          const err: MailChimpCreateMemberError = e.response?.data
-          throw Error(
-            `**${err.title}** - ${err.detail} You submitted \`${emails[j].address}\``
-          )
-        })
-    }
-
-    // now lets make sure mcMember data is up2dat2
-    if (mcMember !== null) {
-      let doUpdate = false
-      const merge_fields: MailChimpMergeFields = {
-        FNAME: "",
-        LNAME: "",
-      }
-      // update first/last name
-      if (
-        person.first !== mcMember.merge_fields.FNAME ||
-        person.last !== mcMember.merge_fields.LNAME
-      ) {
-        merge_fields.FNAME = person.first
-        merge_fields.LNAME = person.last
-        doUpdate = true
-      }
-      if (doUpdate) {
-        log(
-          `Updating name from \`${mcMember.merge_fields.FNAME} ${mcMember.merge_fields.LNAME}\` to  \`${merge_fields.FNAME} ${merge_fields.LNAME}\``
-        )
-        mcMember = await axios
-          .patch(
-            `https://us7.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/${mcMember.id}`,
-            { merge_fields },
-            mailChimpAuth
-          )
-          .then((resp) => {
-            return resp.data as Promise<MailChimpMember>
-          })
-      }
-
-      // update tags
-      const populiTags: PopuliTag[] = Array.isArray(person.tags.tag)
-        ? person.tags.tag
-        : person.tags.tag !== undefined
-        ? [person.tags.tag]
-        : []
-
-      // include the newly added tags also
-      addTags.forEach((x) => {
-        populiTags.push({ id: 0, name: x, system: "unknown" })
-      })
-
-      const tags: MailChimpTag[] = []
-      populiTags.forEach((x) => {
-        if (mcMember?.tags.find((y) => y.name === x.name) === undefined) {
-          tags.push({ name: x.name, status: "active" })
-        }
-      })
-      if (tags.length > 0 && mcMember !== null) {
-        log(
-          `Applying Mailchimp tags to \`${mcMember?.email_address}\`: ${tags
-            .map((x) => `\`${x.name}\``)
-            .join(", ")}`
-        )
-        const r = await axios.post(
-          `https://us7.api.mailchimp.com/3.0/lists/${MAILCHIMP_LIST_ID}/members/${mcMember.id}/tags`,
-          { tags },
-          mailChimpAuth
-        )
-      }
-    }
-  }
-}
-
 async function fetchPersonFromPopuli(person_id: number) {
   async function doFetch() {
     return await axios
@@ -323,7 +191,7 @@ async function fetchPersonFromPopuli(person_id: number) {
   }
 }
 
-export async function exportFromPopuliToMailChimp() {
+export async function runPopuliProcessing() {
   try {
     logs.splice(0, logs.length)
 
@@ -416,14 +284,6 @@ export async function exportFromPopuliToMailChimp() {
           } else {
             // UPDATE RECORD IN POPULI IF NEEDED
             const addTags = await processPopuliPerson(p.id, person)
-
-            // MAILCHIMP
-            try {
-              await processMailChimpPerson(person, addTags)
-            } catch (err: any) {
-              log(err.message)
-              log(`**Skipping over error...**`)
-            }
           }
         }
         offset += updatedPeople.length
@@ -444,8 +304,8 @@ export async function exportFromPopuliToMailChimp() {
 
     // status monitor
     const ping: IStatusMonitorPing = {
-      name: "Export From Populi To MailChimp",
-      groupName: "Populi and MailChimp",
+      name: "Process Populi Data",
+      groupName: "Populi",
       details: logs.join("\n\n"),
       apiKey: process.env.STATUS_MONITOR_API_KEY || "",
       interval: 60 * 24,
