@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.8.0...v1.9.0) (2024-03-03)
+
+
+### Features
+
+* reinstate script to process populi data ([7ec7324](https://github.com/claytonfbell/ondemand-mnw/commit/7ec7324abe003b07528f7cc72c07838a55e72ef4))
+
 ## [1.8.0](https://github.com/claytonfbell/ondemand-mnw/compare/v1.7.1...v1.8.0) (2023-09-07)
 
 
