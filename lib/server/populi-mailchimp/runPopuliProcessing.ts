@@ -4,6 +4,7 @@ import * as querystring from "querystring"
 import { IStatusMonitorPing } from "../../api/IStatusMonitorPing"
 import { getMiscSettings } from "../getMiscSettings"
 import prisma from "../prisma"
+import { makePopuliApiRequest } from "./makePopuliApiRequest"
 import { AddTagResponse } from "./models/populi/AddTagResponse"
 import {
   Address,
@@ -103,8 +104,8 @@ async function processPopuliPerson(personId: number, person: Person) {
     )
 
     for (let i = 0; i < addTags.length; i++) {
-      const doPost = async () =>
-        await axios
+      await makePopuliApiRequest(() => {
+        return axios
           .post(
             `https://montessorinorthwest.populiweb.com/api/`,
             querystring.stringify({
@@ -140,26 +141,15 @@ async function processPopuliPerson(personId: number, person: Person) {
             }
             throw err
           })
-
-      try {
-        await doPost()
-      } catch (err: any) {
-        if (err.response.status === 429) {
-          console.log("Too many requests. Waiting 20 seconds")
-          await new Promise((resolve) => setTimeout(resolve, 20000))
-          await doPost()
-        } else {
-          throw err
-        }
-      }
+      })
     }
   }
   return addTags
 }
 
 async function fetchPersonFromPopuli(person_id: number) {
-  async function doFetch() {
-    return await axios
+  return makePopuliApiRequest(() => {
+    return axios
       .post(
         `https://montessorinorthwest.populiweb.com/api/`,
         querystring.stringify({
@@ -176,19 +166,7 @@ async function fetchPersonFromPopuli(person_id: number) {
       .then((resp) => {
         return xml2json(resp.data) as Promise<GetPersonResponse>
       })
-  }
-
-  try {
-    return await doFetch()
-  } catch (err: any) {
-    if (err.response?.status === 429) {
-      log("Too many requests, sleeping for 20 seconds")
-      await new Promise((resolve) => setTimeout(resolve, 20000))
-      return await doFetch()
-    } else {
-      throw err
-    }
-  }
+  })
 }
 
 export async function runPopuliProcessing() {
@@ -227,34 +205,42 @@ export async function runPopuliProcessing() {
         .tz("America/Los_Angeles")
         .format("YYYY-MM-DD HH:mm:ss")
 
-      const response = await axios
-        .post(
-          `https://montessorinorthwest.populiweb.com/api/`,
-          querystring.stringify({
-            task: "getUpdatedPeople",
-            start_time,
-            offset,
-          }),
-          {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: POPULI_API_KEY,
-            },
-          }
-        )
-        .then((resp) => {
-          return xml2json(resp.data) as Promise<GetUpdatedPeopleResponse>
-        })
-        .catch((e: AxiosError) => {
-          throw Error(
-            `Failed **Populi** API request \`getUpdatedPeople\` with status \`${
-              e.response?.statusText ||
-              e.response?.status ||
-              e.message ||
-              "unknown"
-            }\``
+      const response = await makePopuliApiRequest(() => {
+        return axios
+          .post(
+            `https://montessorinorthwest.populiweb.com/api/`,
+            querystring.stringify({
+              task: "getUpdatedPeople",
+              start_time,
+              offset,
+            }),
+            {
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                Authorization: POPULI_API_KEY,
+              },
+            }
           )
-        })
+          .then((resp) => {
+            return xml2json(resp.data) as Promise<GetUpdatedPeopleResponse>
+          })
+          .catch((e: AxiosError) => {
+            throw Error(
+              `Failed **Populi** API request \`getUpdatedPeople\` with status \`${
+                e.response?.statusText ||
+                e.response?.status ||
+                e.message ||
+                "unknown"
+              }\``
+            )
+          })
+      })
+
+      if (response === null) {
+        log("Failed to fetch updated people")
+        keepGoing = false
+        continue
+      }
 
       let updatedPeople: UpdatedPerson[] = []
       if (response.response.person !== undefined) {
@@ -277,6 +263,10 @@ export async function runPopuliProcessing() {
           // log(`Fetching details on \`${p.first_name}\` \`${p.last_name}\``)
           const personResponse = await fetchPersonFromPopuli(p.id)
 
+          if (personResponse === null) {
+            log(`Failed to fetch person ${p.id}`)
+            continue
+          }
           const { response: person } = personResponse
 
           if (person.status === "DELETED") {
