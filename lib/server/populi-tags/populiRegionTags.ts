@@ -1,13 +1,13 @@
-interface PopuliRegionTag {
+interface PopuliREGionTag {
   tag: string
   zips?: number[]
   states?: string[]
   testCountries?: (countries: string[]) => boolean
 }
 
-export const populiRegionTags: PopuliRegionTag[] = [
+export const populiRegionTags: PopuliREGionTag[] = [
   {
-    tag: "Reg - WA Spokane Area",
+    tag: "REG - WA Spokane Area",
     zips: [
       99105, 99169, 99341, 99344, 99371, 99401, 99402, 99403, 99320, 99336,
       99337, 99338, 99345, 99346, 99350, 99352, 99353, 99354, 98801, 98811,
@@ -36,7 +36,7 @@ export const populiRegionTags: PopuliRegionTag[] = [
     ],
   },
   {
-    tag: "Reg - WA Seattle Area",
+    tag: "REG - WA Seattle Area",
     zips: [
       98305, 98326, 98331, 98350, 98357, 98362, 98363, 98381, 98382, 98520,
       98526, 98535, 98536, 98537, 98541, 98547, 98550, 98552, 98557, 98559,
@@ -71,7 +71,7 @@ export const populiRegionTags: PopuliRegionTag[] = [
     ],
   },
   {
-    tag: "Reg - USA Western",
+    tag: "REG - USA Western",
     states: [
       "OR",
       "WA",
@@ -89,7 +89,7 @@ export const populiRegionTags: PopuliRegionTag[] = [
     ],
   },
   {
-    tag: "Reg - USA Southern",
+    tag: "REG - USA Southern",
     states: [
       "AL",
       "DC",
@@ -110,11 +110,11 @@ export const populiRegionTags: PopuliRegionTag[] = [
     ],
   },
   {
-    tag: "Reg - USA New England",
+    tag: "REG - USA New England",
     states: ["MA", "CT", "VT", "NH", "ME", "RI"],
   },
   {
-    tag: "Reg - USA Midwestern",
+    tag: "REG - USA Midwestern",
     states: [
       "IL",
       "IN",
@@ -131,9 +131,9 @@ export const populiRegionTags: PopuliRegionTag[] = [
       "ON",
     ], // ON canada
   },
-  { tag: "Reg - USA Mid-Atlantic", states: ["MD", "NJ", "NY", "PA", "VA"] },
+  { tag: "REG - USA Mid-Atlantic", states: ["MD", "NJ", "NY", "PA", "VA"] },
   {
-    tag: "Reg - OR Southern Oregon",
+    tag: "REG - OR Southern Oregon",
     zips: [
       97411, 97414, 97420, 97423, 97449, 97458, 97459, 97466, 97406, 97415,
       97444, 97450, 97465, 97476, 97410, 97416, 97417, 97429, 97435, 97436,
@@ -141,9 +141,9 @@ export const populiRegionTags: PopuliRegionTag[] = [
       97473, 97479, 97481, 97484, 97486, 97494, 97495, 97496, 97499,
     ],
   },
-  { tag: "Reg - OR Oregon", states: ["OR"] },
+  { tag: "REG - OR Oregon", states: ["OR"] },
   {
-    tag: "Reg - OR Portland Area",
+    tag: "REG - OR Portland Area",
     zips: [
       97326, 97330, 97331, 97333, 97370, 97456, 97004, 97009, 97011, 97013,
       97015, 97017, 97022, 97023, 97027, 97028, 97034, 97035, 97038, 97042,
@@ -182,12 +182,12 @@ export const populiRegionTags: PopuliRegionTag[] = [
     ],
   },
   {
-    tag: "Reg - International",
+    tag: "REG - International",
     testCountries: (countries) =>
       countries.filter((x) => x !== "US").length > 0,
   },
   {
-    tag: "Reg - CA Southern California",
+    tag: "REG - CA Southern California",
     zips: [
       92222, 92227, 92231, 92233, 92243, 92249, 92250, 92251, 92257, 92259,
       92266, 92273, 92275, 92281, 92283, 93203, 93205, 93206, 93215, 93220,
@@ -268,7 +268,7 @@ export const populiRegionTags: PopuliRegionTag[] = [
     ],
   },
   {
-    tag: "Reg - CA Northern California",
+    tag: "REG - CA Northern California",
     zips: [
       94501, 94502, 94536, 94538, 94539, 94541, 94542, 94544, 94545, 94546,
       94550, 94551, 94552, 94555, 94560, 94566, 94568, 94577, 94578, 94579,

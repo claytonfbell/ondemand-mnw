@@ -1,7 +1,7 @@
 import { NextApiResponse } from "next"
 import { UnauthorizedException } from "../../lib/server/HttpException"
 import { buildResponse } from "../../lib/server/buildResponse"
-import { runPopuliProcessing } from "../../lib/server/populi-mailchimp/runPopuliProcessing"
+import { runPopuliProcessing } from "../../lib/server/populi-tags/runPopuliProcessing"
 import withSession, { NextIronRequest } from "../../lib/server/session"
 
 async function handler(
