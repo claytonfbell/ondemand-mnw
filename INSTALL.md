@@ -81,3 +81,9 @@ vim /etc/sysctl.conf
 # ADD: vm.swappiness=10
 
 ```
+
+## Cleanup
+
+```bash
+docker image prune
+```
