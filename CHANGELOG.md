@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.2](https://github.com/claytonfbell/ondemand-mnw/compare/v1.10.1...v1.10.2) (2024-11-04)
+
+
+### Bug Fixes
+
+* typo fixed ([145d714](https://github.com/claytonfbell/ondemand-mnw/commit/145d714eacb4dc5401f27a401e8cdc46d3608bad))
+
 ### [1.10.1](https://github.com/claytonfbell/ondemand-mnw/compare/v1.10.0...v1.10.1) (2024-11-04)
 
 
