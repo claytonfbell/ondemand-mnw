@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.3](https://github.com/claytonfbell/ondemand-mnw/compare/v1.10.2...v1.10.3) (2025-05-06)
+
+
+### Bug Fixes
+
+* added new admin ([c9d37f0](https://github.com/claytonfbell/ondemand-mnw/commit/c9d37f07bbdc7d16fb33a91bde7371659b5e139d))
+* new certificate template ([90c4bd5](https://github.com/claytonfbell/ondemand-mnw/commit/90c4bd51bde031075ded970f1d48957fa52a94a0))
+
 ### [1.10.2](https://github.com/claytonfbell/ondemand-mnw/compare/v1.10.1...v1.10.2) (2024-11-04)
 
 
