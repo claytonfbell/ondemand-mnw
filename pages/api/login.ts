@@ -57,6 +57,7 @@ async function handler(
           "tyler@montessori-nw.org",
           "jess@montessori-nw.org",
           "kim.yue@montessori-nw.org",
+          "grace@montessori-nw.org",
         ]
         if (approvedAdmins.includes(email)) {
           user = await prisma.user.create({ data: { email, isAdmin: true } })
